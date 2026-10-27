@@ -189,8 +189,14 @@ if "hf_token" not in st.session_state:
 if "engine" not in st.session_state:
     st.session_state.engine = TranslationEngine(hf_token=st.session_state.hf_token)
 
-if "input_text" not in st.session_state:
-    st.session_state.input_text = ""
+if "src_lang_select" not in st.session_state:
+    st.session_state["src_lang_select"] = "English"
+
+if "tgt_lang_select" not in st.session_state:
+    st.session_state["tgt_lang_select"] = "Hindi"
+
+if "main_input_area" not in st.session_state:
+    st.session_state["main_input_area"] = ""
 
 if "output_text" not in st.session_state:
     st.session_state.output_text = ""
@@ -198,10 +204,25 @@ if "output_text" not in st.session_state:
 if "last_latency" not in st.session_state:
     st.session_state.last_latency = 0.0
 
-if "src_idx" not in st.session_state:
-    st.session_state.src_idx = 0  # English
-if "tgt_idx" not in st.session_state:
-    st.session_state.tgt_idx = 1  # Hindi
+# Callbacks for reliable state mutations
+def do_swap():
+    cur_src = st.session_state.get("src_lang_select", "English")
+    cur_tgt = st.session_state.get("tgt_lang_select", "Hindi")
+    st.session_state["src_lang_select"] = cur_tgt
+    st.session_state["tgt_lang_select"] = cur_src
+
+    cur_out = st.session_state.get("output_text", "")
+    if cur_out.strip():
+        cur_in = st.session_state.get("main_input_area", "")
+        st.session_state["main_input_area"] = cur_out
+        st.session_state["output_text"] = cur_in
+
+def set_preset(text):
+    st.session_state["main_input_area"] = text
+
+def do_clear():
+    st.session_state["main_input_area"] = ""
+    st.session_state["output_text"] = ""
 
 # Quick Example Presets
 PRESETS = [
@@ -242,34 +263,22 @@ with tab_translator:
         src_choice = st.selectbox(
             "Source Language",
             options=lang_names,
-            index=st.session_state.src_idx,
             format_func=lambda x: LANGUAGE_NATIVE_NAMES.get(x, x),
             key="src_lang_select"
         )
-        st.session_state.src_idx = lang_names.index(src_choice)
 
     with sel_swap:
         st.write("")
         st.write("")
-        if st.button("⇄", help="Swap Languages", use_container_width=True):
-            tmp = st.session_state.src_idx
-            st.session_state.src_idx = st.session_state.tgt_idx
-            st.session_state.tgt_idx = tmp
-            # Swap text if available
-            if st.session_state.output_text:
-                st.session_state.input_text = st.session_state.output_text
-                st.session_state.output_text = ""
-            st.rerun()
+        st.button("⇄", help="Swap Languages", on_click=do_swap, use_container_width=True)
 
     with sel_col2:
         tgt_choice = st.selectbox(
             "Target Language",
             options=lang_names,
-            index=st.session_state.tgt_idx,
             format_func=lambda x: LANGUAGE_NATIVE_NAMES.get(x, x),
             key="tgt_lang_select"
         )
-        st.session_state.tgt_idx = lang_names.index(tgt_choice)
 
     src_code = SUPPORTED_LANGUAGES[src_choice]
     tgt_code = SUPPORTED_LANGUAGES[tgt_choice]
@@ -290,9 +299,7 @@ with tab_translator:
     chip_cols = st.columns(len(PRESETS))
     for i, p in enumerate(PRESETS):
         with chip_cols[i]:
-            if st.button(f'"{p[:34]}..."', key=f"chip_{i}", use_container_width=True):
-                st.session_state.input_text = p
-                st.rerun()
+            st.button(f'"{p[:34]}..."', key=f"chip_{i}", on_click=set_preset, args=(p,), use_container_width=True)
 
     st.write("")
 
@@ -303,13 +310,11 @@ with tab_translator:
         st.markdown(f"**{src_choice}** (`{src_code}`)")
         user_input = st.text_area(
             "Source Text",
-            value=st.session_state.input_text,
             height=240,
             placeholder=f"Type or paste text in {src_choice} here...",
             label_visibility="collapsed",
             key="main_input_area"
         )
-        st.session_state.input_text = user_input
 
         # Bottom Bar under Input
         c_count = len(user_input)
@@ -319,10 +324,7 @@ with tab_translator:
         with in_b1:
             st.markdown(f'<span class="meta-pill">Characters: {c_count}</span> <span class="meta-pill">Words: {w_count}</span>', unsafe_allow_html=True)
         with in_b2:
-            if st.button("🧹 Clear", use_container_width=True):
-                st.session_state.input_text = ""
-                st.session_state.output_text = ""
-                st.rerun()
+            st.button("🧹 Clear", on_click=do_clear, use_container_width=True)
 
     with work_col2:
         st.markdown(f"**{tgt_choice}** (`{tgt_code}`)")
