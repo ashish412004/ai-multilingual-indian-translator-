@@ -46,12 +46,20 @@ class TranslationEngine:
         # Cache for loaded models: {model_name: {"model": model, "tokenizer": tokenizer}}
         self._loaded_models: Dict[str, Dict[str, Any]] = {}
         
-        # Hugging Face auth token
-        self.hf_token = (
+        # Hugging Face auth token (supports env vars and Streamlit secrets)
+        token = (
             hf_token
             or os.environ.get("HF_TOKEN")
             or os.environ.get("HUGGING_FACE_HUB_TOKEN")
         )
+        if not token:
+            try:
+                import streamlit as st
+                if "HF_TOKEN" in st.secrets:
+                    token = st.secrets["HF_TOKEN"]
+            except Exception:
+                pass
+        self.hf_token = token
 
     def set_hf_token(self, token: str):
         """Update Hugging Face token dynamically."""

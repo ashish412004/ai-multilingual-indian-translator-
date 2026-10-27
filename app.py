@@ -184,7 +184,13 @@ if "history" not in st.session_state:
     st.session_state.history = []
 
 if "hf_token" not in st.session_state:
-    st.session_state.hf_token = os.environ.get("HF_TOKEN", "")
+    secret_tok = ""
+    try:
+        if "HF_TOKEN" in st.secrets:
+            secret_tok = st.secrets["HF_TOKEN"]
+    except Exception:
+        pass
+    st.session_state.hf_token = os.environ.get("HF_TOKEN", "") or secret_tok
 
 if "engine" not in st.session_state:
     st.session_state.engine = TranslationEngine(hf_token=st.session_state.hf_token)
