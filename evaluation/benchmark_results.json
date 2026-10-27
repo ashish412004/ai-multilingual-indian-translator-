@@ -1,0 +1,93 @@
+[
+  {
+    "pair_id": "EN-HI",
+    "pair_name": "English -> Hindi",
+    "model_id": "ai4bharat/indictrans2-en-indic-dist-200M",
+    "src_code": "eng_Latn",
+    "tgt_code": "hin_Deva",
+    "input_text": "Antigravity is an advanced AI assistant designed to accelerate modern software development.",
+    "human_reference": "एंटीग्रेविटी एक उन्नत एआई सहायक है जिसे आधुनिक सॉफ्टवेयर विकास में तेजी लाने के लिए डिज़ाइन किया गया है।",
+    "model_prediction": "एंटीग्रेविटी एक उन्नत ए. आई. सहायक है जिसे आधुनिक सॉफ्टवेयर विकास को गति देने के लिए डिज़ाइन किया गया है।",
+    "bleu_score": 72.46,
+    "chrf_plus_plus": 93.30,
+    "latency_seconds": 4.13
+  },
+  {
+    "pair_id": "HI-EN",
+    "pair_name": "Hindi -> English",
+    "model_id": "ai4bharat/indictrans2-indic-en-dist-200M",
+    "src_code": "hin_Deva",
+    "tgt_code": "eng_Latn",
+    "input_text": "कृत्रिम बुद्धिमत्ता और प्राकृतिक भाषा प्रसंस्करण भारतीय भाषाओं को सशक्त बना रहे हैं।",
+    "human_reference": "Artificial intelligence and natural language processing are empowering Indian languages.",
+    "model_prediction": "Artificial intelligence and natural language processing are empowering Indian languages.",
+    "bleu_score": 100.0,
+    "chrf_plus_plus": 100.0,
+    "latency_seconds": 86.17
+  },
+  {
+    "pair_id": "EN-GU",
+    "pair_name": "English -> Gujarati",
+    "model_id": "ai4bharat/indictrans2-en-indic-dist-200M",
+    "src_code": "eng_Latn",
+    "tgt_code": "guj_Gujr",
+    "input_text": "Education and technology play a vital role in nation building.",
+    "human_reference": "શિક્ષણ અને ટેકનોલોજી રાષ્ટ્ર નિર્માણમાં મહત્વપૂર્ણ ભૂમિકા ભજવે છે.",
+    "model_prediction": "શિક્ષણ અને ટેકનોલોજી રાષ્ટ્ર નિર્માણમાં મહત્વપૂર્ણ ભૂમિકા ભજવે છે.",
+    "bleu_score": 100.0,
+    "chrf_plus_plus": 100.0,
+    "latency_seconds": 1.04
+  },
+  {
+    "pair_id": "EN-MR",
+    "pair_name": "English -> Marathi",
+    "model_id": "ai4bharat/indictrans2-en-indic-dist-200M",
+    "src_code": "eng_Latn",
+    "tgt_code": "mar_Deva",
+    "input_text": "Machine translation helps bridge communication barriers across diverse linguistic communities.",
+    "human_reference": "मशीन भाषांतर विविध भाषिक समुदायांमध्ये संपर्कातील अडथळे दूर करण्यास मदत करते.",
+    "model_prediction": "यंत्र अनुवादामुळे विविध भाषिक समुदायांमधील संवादातील अडथळे दूर होण्यास मदत होते.",
+    "bleu_score": 10.60,
+    "chrf_plus_plus": 49.74,
+    "latency_seconds": 1.22
+  },
+  {
+    "pair_id": "HI-GU",
+    "pair_name": "Hindi -> Gujarati",
+    "model_id": "ai4bharat/indictrans2-indic-indic-dist-320M",
+    "src_code": "hin_Deva",
+    "tgt_code": "guj_Gujr",
+    "input_text": "यह अनुसंधान परियोजना भारतीय भाषाओं के लिए तंत्रिका अनुवाद की शक्ति प्रदर्शित करती है।",
+    "human_reference": "આ સંશોધન પ્રોજેક્ટ ભારતીય ભાષાઓ માટે ન્યુરલ ટ્રાન્સલેશનની શક્તિ દર્શાવે છે.",
+    "model_prediction": "આ સંશોધન પ્રોજેક્ટ ભારતીય ભાષાઓ માટે ચેતા અનુવાદની શક્તિ દર્શાવે છે.",
+    "bleu_score": 63.40,
+    "chrf_plus_plus": 73.03,
+    "latency_seconds": 119.23
+  },
+  {
+    "pair_id": "MR-EN",
+    "pair_name": "Marathi -> English",
+    "model_id": "ai4bharat/indictrans2-indic-en-dist-200M",
+    "src_code": "mar_Deva",
+    "tgt_code": "eng_Latn",
+    "input_text": "विद्यार्थ्यांनी नवनवीन तंत्रज्ञानाचा अभ्यास करून स्वतःचा विकास केला पाहिजे.",
+    "human_reference": "Students should study innovative technology and develop themselves.",
+    "model_prediction": "Students should develop themselves by studying new technologies.",
+    "bleu_score": 14.26,
+    "chrf_plus_plus": 61.21,
+    "latency_seconds": 0.55
+  },
+  {
+    "pair_id": "TA-HI",
+    "pair_name": "Tamil -> Hindi",
+    "model_id": "ai4bharat/indictrans2-indic-indic-dist-320M",
+    "src_code": "tam_Taml",
+    "tgt_code": "hin_Deva",
+    "input_text": "தமிழ்நாட்டின் கலாச்சாரம் மற்றும் பாரம்பரியம் மிகவும் பழமையானது.",
+    "human_reference": "तमिलनाडु की संस्कृति और परंपरा बहुत प्राचीन है।",
+    "model_prediction": "तमिलनाडु की संस्कृति और परंपरा बहुत पुरानी है।",
+    "bleu_score": 70.71,
+    "chrf_plus_plus": 80.63,
+    "latency_seconds": 0.84
+  }
+]

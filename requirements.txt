@@ -1,0 +1,23 @@
+# AI-Based Multilingual Indian Language Translator Using NLP
+# Project Dependencies
+
+# Deep Learning Framework
+torch>=2.0.0
+
+# Hugging Face NLP Models & Transformers 4.x
+transformers>=4.38.0,<4.45.0
+huggingface-hub>=0.23.0
+sentencepiece>=0.2.0
+sacremoses>=0.2.0
+accelerate>=0.28.0
+
+# Indian Language NLP & Processing
+indic-nlp-library>=0.92
+regex>=2024.5.15
+
+# Evaluation & Metrics
+sacrebleu>=2.4.0
+pandas>=2.0.0
+
+# User Interface
+streamlit>=1.35.0
