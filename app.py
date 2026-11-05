@@ -518,44 +518,46 @@ st.markdown("""
         transform: scale(1.05);
     }
 
-    /* Style Streamlit Audio Input into Large Glowing Circular Mic Button */
+    /* Clean, Modern Audio Input Capsule (Crisp Undistorted Circle) */
     div[data-testid="stAudioInput"] {
-        background: transparent !important;
-        border: none !important;
+        background-color: #0E223D !important;
+        border: 1.5px solid #1E3A5F !important;
+        border-radius: 9999px !important;
+        padding: 4px 12px !important;
+        margin: 0.85rem 0 !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45) !important;
+        height: 52px !important;
         display: flex !important;
-        flex-direction: column !important;
         align-items: center !important;
-        justify-content: center !important;
-        padding: 0 !important;
     }
     div[data-testid="stAudioInput"] button[data-testid="stAudioInputRecordButton"],
     div[data-testid="stAudioInput"] button {
-        width: 76px !important;
-        height: 76px !important;
+        width: 38px !important;
+        height: 38px !important;
+        min-width: 38px !important;
+        min-height: 38px !important;
+        max-width: 38px !important;
+        max-height: 38px !important;
         border-radius: 50% !important;
-        background: radial-gradient(circle, #20C9B7 0%, #0F766E 100%) !important;
-        border: 3px solid rgba(32, 201, 183, 0.4) !important;
-        box-shadow: 0 0 25px rgba(32, 201, 183, 0.5) !important;
+        background: radial-gradient(circle, #20C9B7 0%, #0D9488 100%) !important;
+        border: 2px solid #20C9B7 !important;
+        box-shadow: 0 0 12px rgba(32, 201, 183, 0.5) !important;
         display: flex !important;
         align-items: center !important;
         justify-content: center !important;
-        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
         cursor: pointer !important;
-        margin: 0.5rem auto !important;
-    }
-    div[data-testid="stAudioInput"] button:hover {
-        transform: scale(1.04) !important;
-        box-shadow: 0 0 30px rgba(32, 201, 183, 0.7) !important;
+        transition: transform 0.15s ease, background 0.15s ease !important;
+        padding: 0 !important;
     }
     div[data-testid="stAudioInput"] button:active {
-        transform: scale(0.92) !important;
+        transform: scale(0.9) !important;
         background: radial-gradient(circle, #F43F5E 0%, #BE123C 100%) !important;
         border-color: #FDA4AF !important;
-        box-shadow: 0 0 35px rgba(244, 63, 94, 0.8) !important;
+        box-shadow: 0 0 18px rgba(244, 63, 94, 0.8) !important;
     }
     div[data-testid="stAudioInput"] svg {
-        width: 32px !important;
-        height: 32px !important;
+        width: 20px !important;
+        height: 20px !important;
         fill: #08162D !important;
         color: #08162D !important;
     }
@@ -972,30 +974,29 @@ elif nav_choice == "Voice Conversation":
             label_visibility="visible"
         )
 
-        # Curved Recording Dock with Waveform & Hold-to-Record Mic Button
+        # Waveform & Recording Console
         st.markdown("""
-        <div class="mobile-dock">
-            <div style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8; margin-bottom:0.25rem;">
-                Audio Frequency Waveform
+        <div style="background:#08162D; border:1px solid #1E3A5F; border-radius:18px; padding:1rem; margin-top:1rem;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
+                <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8;">Speech Input Channel</span>
+                <span style="font-size:0.75rem; color:#20C9B7; font-weight:600;">Hold or Tap Mic</span>
             </div>
-            <div class="waveform-container" style="background:#08162D; border:none; height:46px;">
+            <div class="waveform-container" style="background:#0E223D; border:none; height:42px; margin-bottom:0.5rem;">
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
                 <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-            </div>
-            <div style="font-size:0.78rem; font-weight:600; color:#20C9B7; margin-bottom:0.5rem;">
-                Hold to Record &bull; Tap to Speak
             </div>
         </div>
         """, unsafe_allow_html=True)
 
-        # Streamlit Native Mic Button (Transformed via CSS into circular hold-and-record button)
-        mv_audio = st.audio_input("Record Voice Input", key="mv_mic_input", label_visibility="collapsed")
+        # Clean circular mic recording capsule
+        mv_audio = st.audio_input("Record Voice", key="mv_mic_input", label_visibility="collapsed")
 
         # Action Button to Execute Pipeline
+        st.write("")
         mv_run = st.button("Translate Speech", key="btn_mv_run", type="primary", use_container_width=True)
 
         if mv_run:
