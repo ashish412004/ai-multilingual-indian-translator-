@@ -49,6 +49,7 @@ st.markdown("""
     .st-emotion-cache-15ecox0,
     [data-testid="collapsedControl"] {
         display: flex !important;
+        align-items: center !important;
         visibility: visible !important;
         opacity: 1 !important;
         position: fixed !important;
@@ -59,10 +60,19 @@ st.markdown("""
         border: 1.5px solid #20C9B7 !important;
         border-radius: 8px !important;
         color: #20C9B7 !important;
-        padding: 6px 8px !important;
+        padding: 6px 12px !important;
         box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
+    }
+    [data-testid="stSidebarCollapsedControl"]::after,
+    button[data-testid="stSidebarCollapsedControl"]::after {
+        content: " MENU";
+        color: #20C9B7;
+        font-size: 0.75rem;
+        font-weight: 700;
+        margin-left: 6px;
+        letter-spacing: 0.05em;
     }
     [data-testid="stSidebarCollapsedControl"]:hover,
     button[data-testid="stSidebarCollapsedControl"]:hover,
@@ -677,17 +687,12 @@ with st.sidebar:
 
     st.markdown('<div style="font-size: 0.72rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.25rem 0 0.5rem 0.25rem;">Workspace Navigation</div>', unsafe_allow_html=True)
     
-    current_idx = NAV_OPTIONS.index(st.session_state.nav_choice) if st.session_state.nav_choice in NAV_OPTIONS else 0
-    sidebar_choice = st.radio(
+    nav_choice = st.radio(
         "Navigation",
         options=NAV_OPTIONS,
-        index=current_idx,
         label_visibility="collapsed",
-        key="sidebar_nav_radio"
+        key="main_nav_radio"
     )
-    if sidebar_choice != st.session_state.nav_choice:
-        st.session_state.nav_choice = sidebar_choice
-        st.rerun()
 
     st.markdown('<div style="margin-top: 2.25rem; border-top: 1px solid #1E3A5F; padding-top: 1.25rem;"></div>', unsafe_allow_html=True)
     
@@ -712,29 +717,19 @@ with st.sidebar:
 
 
 # ==============================================================================
-# TOP EXECUTIVE NAVIGATION BAR (ALWAYS ACCESSIBLE ON MOBILE & DESKTOP)
+# TOP BREADCRUMB & STATUS BAR
 # ==============================================================================
-top_nav_col1, top_nav_col2 = st.columns([10, 2])
-with top_nav_col1:
-    top_pills_val = st.pills(
-        "Workspace Navigation",
-        options=NAV_OPTIONS,
-        default=st.session_state.nav_choice,
-        label_visibility="collapsed",
-        key="top_nav_pills_selector"
-    )
-    if top_pills_val and top_pills_val != st.session_state.nav_choice:
-        st.session_state.nav_choice = top_pills_val
-        st.rerun()
-
-with top_nav_col2:
-    st.markdown("""
-    <div style="display:flex; justify-content:flex-end; align-items:center; height:100%; padding-top:4px;">
-        <span class="breadcrumb-pill">22 Languages</span>
+st.markdown(f"""
+<div class="top-breadcrumb-bar" style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.75rem;">
+    <div style="display:flex; align-items:center; gap:8px;">
+        <span class="top-breadcrumb">IndicAI Pro &gt; Workspace &gt; {nav_choice}</span>
+        <span class="breadcrumb-pill">Protected Preview</span>
     </div>
-    """, unsafe_allow_html=True)
-
-nav_choice = st.session_state.nav_choice
+    <div>
+        <span class="breadcrumb-pill">22 Languages Active</span>
+    </div>
+</div>
+""", unsafe_allow_html=True)
 
 # ==============================================================================
 # VIEW 1: TRANSLATE (TEXT-TO-TEXT WORKSPACE)
