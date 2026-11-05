@@ -1,11 +1,13 @@
 """
 Model Engine package for AI-Based Multilingual Indian Language Translator.
+Supports all 22 scheduled Indian languages plus English.
 Includes Text Translation, Speech Recognition (ASR), and Text-to-Speech (TTS).
 """
 from .config import (
     SUPPORTED_LANGUAGES,
     CODE_TO_LANGUAGE,
     LANGUAGE_NATIVE_NAMES,
+    LANGUAGE_SPEECH_CAPABILITIES,
     MODEL_EN_INDIC,
     MODEL_INDIC_EN,
     MODEL_INDIC_INDIC,
@@ -19,6 +21,7 @@ __all__ = [
     "SUPPORTED_LANGUAGES",
     "CODE_TO_LANGUAGE",
     "LANGUAGE_NATIVE_NAMES",
+    "LANGUAGE_SPEECH_CAPABILITIES",
     "MODEL_EN_INDIC",
     "MODEL_INDIC_EN",
     "MODEL_INDIC_INDIC",

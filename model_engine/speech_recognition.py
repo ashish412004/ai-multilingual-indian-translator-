@@ -1,7 +1,7 @@
 """
 Speech recognition (ASR) engine powered by faster-whisper.
 Converts spoken audio (microphone recordings or audio uploads) into text
-with automatic or guided language detection.
+with automatic or guided language detection across supported Indian languages and English.
 """
 
 import os
@@ -9,23 +9,33 @@ import io
 import tempfile
 from typing import Optional, Tuple, Dict, Any
 from faster_whisper import WhisperModel
+from .config import LANGUAGE_SPEECH_CAPABILITIES
 
 # Map IndicTrans2/FLORES codes to ISO 639-1 two-letter codes supported by Whisper
 FLORES_TO_WHISPER_LANG: Dict[str, str] = {
-    "eng_Latn": "en",
-    "hin_Deva": "hi",
-    "guj_Gujr": "gu",
-    "mar_Deva": "mr",
-    "tam_Taml": "ta",
-    "tel_Telu": "te",
-    "ben_Beng": "bn",
-    "pan_Guru": "pa",
-    "kan_Knda": "kn",
-    "mal_Mlym": "ml",
+    code: meta["asr"]
+    for code, meta in LANGUAGE_SPEECH_CAPABILITIES.items()
+    if meta.get("asr") is not None
 }
 
-# Reverse map: 2-letter ISO code to display name / FLORES code
-WHISPER_TO_FLORES_LANG: Dict[str, str] = {v: k for k, v in FLORES_TO_WHISPER_LANG.items()}
+# Reverse map: 2-letter ISO code to primary FLORES code
+WHISPER_TO_FLORES_LANG: Dict[str, str] = {
+    "en": "eng_Latn",
+    "hi": "hin_Deva",
+    "bn": "ben_Beng",
+    "gu": "guj_Gujr",
+    "kn": "kan_Knda",
+    "ml": "mal_Mlym",
+    "mr": "mar_Deva",
+    "ne": "npi_Deva",
+    "pa": "pan_Guru",
+    "ta": "tam_Taml",
+    "te": "tel_Telu",
+    "ur": "urd_Arab",
+    "as": "asm_Beng",
+    "sa": "san_Deva",
+    "sd": "snd_Arab",
+}
 
 
 class SpeechRecognizer:
@@ -63,6 +73,10 @@ class SpeechRecognizer:
         """Check if model is already loaded in memory."""
         return self._model is not None
 
+    def is_language_supported(self, flores_code: str) -> bool:
+        """Check whether speech recognition is verified for this language."""
+        return flores_code in FLORES_TO_WHISPER_LANG
+
     def transcribe(
         self,
         audio_data: Any,
@@ -97,7 +111,6 @@ class SpeechRecognizer:
             if isinstance(audio_data, str) and os.path.isfile(audio_data):
                 audio_input = audio_data
             else:
-                # Handle BytesIO, UploadedFile or raw bytes
                 if hasattr(audio_data, "read"):
                     data_bytes = audio_data.read()
                     if hasattr(audio_data, "seek"):
@@ -109,7 +122,6 @@ class SpeechRecognizer:
                 else:
                     raise ValueError(f"Unsupported audio data type: {type(audio_data)}")
 
-                # Write to temp file with .wav or .mp3
                 with tempfile.NamedTemporaryFile(suffix=".wav", delete=False) as tmp:
                     tmp.write(data_bytes)
                     temp_path = tmp.name
@@ -137,7 +149,6 @@ class SpeechRecognizer:
             return full_text, meta
 
         finally:
-            # Clean up temporary file
             if temp_path and os.path.exists(temp_path):
                 try:
                     os.remove(temp_path)

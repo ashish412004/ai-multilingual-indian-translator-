@@ -1,6 +1,12 @@
 """
 IndicAI Pro - AI-Based Multilingual Indian Language Translator
-Ultra-Modern, Production-Grade SaaS Interface with Full Speech-to-Speech Translation
+Supports All 22 Scheduled Indian Languages + English
+Includes:
+- Two-Person Voice Conversation (Turn-by-turn Speech-to-Speech)
+- Single Voice Translator (Mic/Upload + ASR + NMT + TTS)
+- Instant Text Translator (All 22 languages)
+- Quality Benchmarks & BLEU Evaluation
+- Session History
 """
 
 import os
@@ -11,18 +17,17 @@ import streamlit as st
 
 # Configure Layout & Meta
 st.set_page_config(
-    page_title="IndicAI Pro — Neural MT & Speech-to-Speech",
+    page_title="IndicAI Pro — 22 Indian Languages Voice & Neural MT",
     page_icon="⚡",
     layout="wide",
     initial_sidebar_state="collapsed",
 )
 
-# Ultra-Modern SaaS CSS (DeepL / Linear / Vercel Aesthetic)
+# Ultra-Modern SaaS CSS (DeepL / Linear Aesthetic)
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
     
-    /* Global Reset & Typography */
     html, body, [class*="css"] {
         font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif !important;
         color: #0f172a;
@@ -33,7 +38,7 @@ st.markdown("""
     .block-container {
         padding-top: 1.25rem !important;
         padding-bottom: 2.5rem !important;
-        max-width: 1280px !important;
+        max-width: 1320px !important;
     }
 
     /* Top Global Navbar */
@@ -112,7 +117,7 @@ st.markdown("""
         border: 1px solid #e2e8f0;
         border-radius: 14px;
         padding: 1.2rem;
-        min-height: 240px;
+        min-height: 220px;
         font-size: 1.15rem;
         line-height: 1.75;
         color: #0f172a;
@@ -123,7 +128,7 @@ st.markdown("""
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        min-height: 240px;
+        min-height: 220px;
         color: #94a3b8;
         background: #f8fafc;
         border: 1px dashed #cbd5e1;
@@ -131,99 +136,38 @@ st.markdown("""
         gap: 8px;
     }
 
-    /* Speech Pipeline Flow Card */
-    .pipeline-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
+    /* Conversation Chat Bubbles */
+    .chat-bubble-a {
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        border-radius: 16px 16px 16px 4px;
         padding: 1rem 1.25rem;
-        margin-bottom: 1.25rem;
-        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.03);
+        margin-bottom: 1rem;
     }
-    .flow-badge {
-        display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        background: #f1f5f9;
-        color: #334155;
-        font-weight: 600;
-        font-size: 0.8rem;
-        padding: 4px 10px;
-        border-radius: 8px;
+    .chat-bubble-b {
+        background: #faf5ff;
+        border: 1px solid #e9d5ff;
+        border-radius: 16px 16px 4px 16px;
+        padding: 1rem 1.25rem;
+        margin-bottom: 1rem;
     }
-
-    /* Audio Player Box */
-    .audio-playback-box {
-        background: #f8fafc;
-        border: 1px solid #e2e8f0;
-        border-radius: 12px;
-        padding: 1rem;
-        margin-top: 0.75rem;
-    }
-
-    /* Custom Streamlit Tabs Styling */
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 8px;
-        background-color: #f1f5f9;
-        padding: 5px;
-        border-radius: 14px;
-        border: 1px solid #e2e8f0;
-        margin-bottom: 1.5rem;
-    }
-    .stTabs [data-baseweb="tab"] {
-        border-radius: 10px;
-        padding: 8px 20px;
-        font-weight: 600;
-        font-size: 0.92rem;
-        color: #64748b;
-        border: none !important;
-        background-color: transparent !important;
-        transition: all 0.2s ease;
-    }
-    .stTabs [aria-selected="true"] {
-        background-color: #ffffff !important;
-        color: #2563eb !important;
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
-    }
-
-    /* Stats & Benchmark Cards */
-    .kpi-card {
-        background: #ffffff;
-        border: 1px solid #e2e8f0;
-        border-radius: 16px;
-        padding: 1.25rem 1.5rem;
-        box-shadow: 0 4px 15px -2px rgba(15, 23, 42, 0.04);
-        position: relative;
-        overflow: hidden;
-    }
-    .kpi-card::before {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 4px;
-        height: 100%;
-        background: linear-gradient(180deg, #2563eb, #7c3aed);
-    }
-    .kpi-title {
-        font-size: 0.85rem;
-        font-weight: 600;
-        color: #64748b;
+    .bubble-speaker {
+        font-size: 0.82rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.04em;
+        letter-spacing: 0.05em;
+        margin-bottom: 0.35rem;
     }
-    .kpi-val {
-        font-size: 2rem;
-        font-weight: 800;
-        color: #0f172a;
-        margin-top: 0.25rem;
-        letter-spacing: -0.03em;
-    }
-    .kpi-sub {
-        font-size: 0.8rem;
-        color: #10b981;
+    .bubble-orig {
+        font-size: 1.05rem;
         font-weight: 600;
-        margin-top: 0.2rem;
+        color: #0f172a;
+    }
+    .bubble-trans {
+        font-size: 1.15rem;
+        color: #1e3a8a;
+        margin-top: 0.4rem;
+        line-height: 1.6;
     }
 
     /* Technical Badge */
@@ -239,6 +183,16 @@ st.markdown("""
         padding: 3px 10px;
         border-radius: 6px;
     }
+    .capability-tag {
+        font-size: 0.72rem;
+        font-weight: 600;
+        padding: 2px 7px;
+        border-radius: 4px;
+        margin-left: 6px;
+    }
+    .cap-full { background: #dcfce7; color: #15803d; }
+    .cap-in { background: #fef3c7; color: #b45309; }
+    .cap-text { background: #e0f2fe; color: #0369a1; }
 </style>
 """, unsafe_allow_html=True)
 
@@ -246,6 +200,7 @@ st.markdown("""
 from model_engine.config import (
     SUPPORTED_LANGUAGES,
     LANGUAGE_NATIVE_NAMES,
+    LANGUAGE_SPEECH_CAPABILITIES,
     get_model_for_pair,
 )
 from model_engine.translator import TranslationEngine
@@ -257,6 +212,9 @@ from evaluation.test_benchmark import get_saved_benchmark
 # Initialize Session State
 if "history" not in st.session_state:
     st.session_state.history = []
+
+if "dialogue_history" not in st.session_state:
+    st.session_state.dialogue_history = []
 
 if "hf_token" not in st.session_state:
     secret_tok = ""
@@ -277,66 +235,18 @@ if "asr_engine" not in st.session_state:
 if "tts_engine" not in st.session_state:
     st.session_state.tts_engine = TextToSpeechEngine()
 
-# State variables for Text Translator
-if "src_lang_select" not in st.session_state:
-    st.session_state["src_lang_select"] = "English"
-
-if "tgt_lang_select" not in st.session_state:
-    st.session_state["tgt_lang_select"] = "Hindi"
-
-if "main_input_area" not in st.session_state:
-    st.session_state["main_input_area"] = ""
-
-if "output_text" not in st.session_state:
-    st.session_state.output_text = ""
-
-if "last_latency" not in st.session_state:
-    st.session_state.last_latency = 0.0
-
-# State variables for Speech-to-Speech
-if "speech_src_lang" not in st.session_state:
-    st.session_state["speech_src_lang"] = "Auto Detect"
-
-if "speech_tgt_lang" not in st.session_state:
-    st.session_state["speech_tgt_lang"] = "Hindi"
-
-if "speech_recognized_text" not in st.session_state:
-    st.session_state["speech_recognized_text"] = ""
-
-if "speech_translated_text" not in st.session_state:
-    st.session_state["speech_translated_text"] = ""
-
-if "speech_audio_bytes" not in st.session_state:
-    st.session_state["speech_audio_bytes"] = None
-
-if "speech_detected_meta" not in st.session_state:
-    st.session_state["speech_detected_meta"] = None
-
-# Callbacks for reliable UI state manipulation
-def do_swap():
-    cur_src = st.session_state.get("src_lang_select", "English")
-    cur_tgt = st.session_state.get("tgt_lang_select", "Hindi")
-    st.session_state["src_lang_select"] = cur_tgt
-    st.session_state["tgt_lang_select"] = cur_src
-
-    cur_out = st.session_state.get("output_text", "")
-    if cur_out.strip():
-        cur_in = st.session_state.get("main_input_area", "")
-        st.session_state["main_input_area"] = cur_out
-        st.session_state["output_text"] = cur_in
-
-def set_preset(text):
-    st.session_state["main_input_area"] = text
-
-def do_clear():
-    st.session_state["main_input_area"] = ""
-    st.session_state["output_text"] = ""
-
-def do_clear_speech():
-    st.session_state["speech_recognized_text"] = ""
-    st.session_state["speech_translated_text"] = ""
-    st.session_state["speech_audio_bytes"] = None
-    st.session_state["speech_detected_meta"] = None
+# Helpers for capability tagging
+def format_lang_label(name: str) -> str:
+    code = SUPPORTED_LANGUAGES.get(name, "")
+    native = LANGUAGE_NATIVE_NAMES.get(name, name)
+    cap = LANGUAGE_SPEECH_CAPABILITIES.get(code, {})
+    if cap.get("asr") and cap.get("tts"):
+        badge = " [🗣️ Voice + 🔊 Audio]"
+    elif cap.get("asr"):
+        badge = " [🗣️ Voice Input Only]"
+    else:
+        badge = " [📝 Text Only]"
+    return f"{native}{badge}"
 
 # Presets for Quick Testing
 PRESETS = [
@@ -354,453 +264,430 @@ st.markdown("""
         <div>
             <div style="display:flex; align-items:center; gap:8px;">
                 <span class="brand-name">IndicAI Pro</span>
-                <span class="brand-tag">Speech & Text MT v2.5</span>
+                <span class="brand-tag">All 22 Languages</span>
             </div>
         </div>
     </div>
     <div style="display: flex; align-items: center; gap: 14px;">
         <div class="status-pill">
             <span class="status-dot"></span>
-            <span>Speech & IndicTrans2 Ready</span>
+            <span>22 Scheduled Languages + English</span>
         </div>
     </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Main Navigation Tabs (Preserving existing tabs + Adding Speech-to-Speech)
-tab_speech, tab_translate, tab_benchmarks, tab_history = st.tabs([
-    "🎙️ Speech-to-Speech Translation",
-    "✨ Text Translator",
+# Main Navigation Tabs
+tab_convo, tab_single_voice, tab_translate, tab_benchmarks, tab_history = st.tabs([
+    "👥 Two-Person Voice Conversation",
+    "🎙️ Single Voice Translator",
+    "✨ Instant Text Translator",
     "📈 Quality Benchmarks & BLEU",
     "📋 Session History"
 ])
 
+all_lang_names = list(SUPPORTED_LANGUAGES.keys())
+
 # ==============================================================================
-# TAB 1: SPEECH-TO-SPEECH TRANSLATION PIPELINE
+# TAB 1: TWO-PERSON VOICE CONVERSATION TRANSLATOR (TURN-BY-TURN)
 # ==============================================================================
-with tab_speech:
-    # Pipeline Overview Banner
+with tab_convo:
     st.markdown("""
-    <div class="pipeline-card">
+    <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 16px; padding: 1.25rem 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 4px 12px rgba(15,23,42,0.03);">
         <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px;">
-            <div style="display: flex; align-items: center; gap: 8px;">
-                <span style="font-size: 1.1rem; font-weight: 700; color: #1e293b;">Neural Speech-to-Speech Pipeline</span>
+            <div>
+                <h3 style="margin: 0; font-size: 1.35rem; font-weight: 800; color: #1e293b;">Bilingual Voice Conversation Mode</h3>
+                <p style="margin: 0.25rem 0 0 0; color: #64748b; font-size: 0.95rem;">
+                    Speak turn-by-turn in any two Indian languages. The system transcribes, translates with IndicTrans2, and speaks the translated response aloud!
+                </p>
             </div>
-            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span class="flow-badge">1. Voice Input (Mic / File)</span> ➔
-                <span class="flow-badge">2. Whisper ASR</span> ➔
-                <span class="flow-badge">3. IndicTrans2 NMT</span> ➔
-                <span class="flow-badge">4. Multilingual TTS</span>
+            <div>
+                <span class="tech-pill" style="background:#eff6ff; color:#2563eb; font-weight:700;">Automatic Turn-by-Turn</span>
             </div>
         </div>
     </div>
     """, unsafe_allow_html=True)
 
-    lang_names = list(SUPPORTED_LANGUAGES.keys())
-    speech_src_options = ["Auto Detect"] + lang_names
-
-    # Language Selection Controls
-    s_col1, s_col2, s_col3 = st.columns([4, 4, 3])
-    
-    with s_col1:
-        speech_src_choice = st.selectbox(
-            "Spoken / Input Language",
-            options=speech_src_options,
-            format_func=lambda x: "🌐 Auto Detect (faster-whisper)" if x == "Auto Detect" else LANGUAGE_NATIVE_NAMES.get(x, x),
-            key="speech_src_lang"
+    # Participant Language Configuration
+    p_col1, p_col2 = st.columns(2)
+    with p_col1:
+        st.markdown("#### 👤 Person A")
+        lang_a = st.selectbox(
+            "Person A Language",
+            options=all_lang_names,
+            index=all_lang_names.index("Hindi"),
+            format_func=format_lang_label,
+            key="convo_lang_a"
         )
-    
-    with s_col2:
-        speech_tgt_choice = st.selectbox(
-            "Target Spoken Language",
-            options=lang_names,
-            format_func=lambda x: LANGUAGE_NATIVE_NAMES.get(x, x),
-            key="speech_tgt_lang"
+        code_a = SUPPORTED_LANGUAGES[lang_a]
+        cap_a = LANGUAGE_SPEECH_CAPABILITIES.get(code_a, {})
+
+    with p_col2:
+        st.markdown("#### 👤 Person B")
+        lang_b = st.selectbox(
+            "Person B Language",
+            options=all_lang_names,
+            index=all_lang_names.index("Tamil"),
+            format_func=format_lang_label,
+            key="convo_lang_b"
+        )
+        code_b = SUPPORTED_LANGUAGES[lang_b]
+        cap_b = LANGUAGE_SPEECH_CAPABILITIES.get(code_b, {})
+
+    # Live Capability Alert Banner for Conversation
+    warnings = []
+    if not cap_a.get("asr"):
+        warnings.append(f"Person A ({lang_a}) does not have speech recognition support (type text instead).")
+    if not cap_b.get("tts"):
+        warnings.append(f"Person B ({lang_b}) will receive translated text, but audio speech output is unavailable.")
+    if not cap_b.get("asr"):
+        warnings.append(f"Person B ({lang_b}) does not have speech recognition support (type text instead).")
+    if not cap_a.get("tts"):
+        warnings.append(f"Person A ({lang_a}) will receive translated text, but audio speech output is unavailable.")
+
+    if warnings:
+        with st.expander("ℹ️ Capability Notes for Selected Conversation Pair"):
+            for w in warnings:
+                st.caption(f"• {w}")
+
+    st.write("---")
+
+    # Turn-by-Turn Speaking Consoles
+    spk_col1, spk_col2 = st.columns(2)
+
+    # ---------------- PERSON A'S CONSOLE ----------------
+    with spk_col1:
+        st.markdown(f"### 🎤 Speak as Person A ({lang_a})")
+        audio_a = st.audio_input(f"Record Person A ({lang_a})", key="mic_person_a")
+        
+        # Optional Text Fallback / Correction
+        text_input_a = st.text_input(
+            "Or type message for Person A:",
+            placeholder=f"Type in {lang_a}...",
+            key="text_person_a"
         )
 
-    with s_col3:
-        st.write("")
-        st.write("")
-        st.button("🧹 Reset Voice Session", on_click=do_clear_speech, use_container_width=True)
+        send_a = st.button(f"➡️ Send to Person B ({lang_b})", key="btn_send_a", type="primary", use_container_width=True)
 
-    # 1. AUDIO INPUT INTERFACE (Microphone or File Upload)
-    st.write("")
-    st.subheader("Step 1: Record or Upload Speech")
+        if send_a:
+            orig_text = ""
+            if audio_a is not None:
+                with st.spinner(f"Transcribing {lang_a} speech..."):
+                    asr_lang = cap_a.get("asr")
+                    orig_text, meta = st.session_state.asr_engine.transcribe(audio_a, source_language_code=asr_lang)
+            elif text_input_a.strip():
+                orig_text = text_input_a.strip()
+            else:
+                st.warning(f"Please record voice or type a message for Person A.")
 
-    input_mode = st.radio(
-        "Choose Speech Input Source",
-        ["🎙️ Record via Microphone", "📁 Upload Audio File (WAV, MP3, M4A, OGG)"],
-        horizontal=True,
-        label_visibility="collapsed"
-    )
+            if orig_text.strip():
+                with st.spinner(f"Translating ({lang_a} ➔ {lang_b})..."):
+                    trans_text = st.session_state.engine.translate(orig_text, src_lang=code_a, tgt_lang=code_b)
 
-    audio_source = None
-    audio_format = "audio/wav"
+                audio_b_bytes = None
+                if cap_b.get("tts"):
+                    with st.spinner(f"Speaking translated audio for Person B ({lang_b})..."):
+                        try:
+                            audio_b_bytes, _ = st.session_state.tts_engine.synthesize(trans_text, target_lang_code=code_b)
+                        except Exception as e:
+                            st.caption(f"TTS Notice: {e}")
 
-    if "Microphone" in input_mode:
-        # Native Streamlit audio_input
-        mic_audio = st.audio_input("Record voice through microphone")
-        if mic_audio is not None:
-            audio_source = mic_audio
-            audio_format = "audio/wav"
+                st.session_state.dialogue_history.append({
+                    "speaker": "Person A",
+                    "src_lang": lang_a,
+                    "tgt_lang": lang_b,
+                    "original": orig_text,
+                    "translated": trans_text,
+                    "audio": audio_b_bytes,
+                    "time": time.strftime("%H:%M:%S")
+                })
+                st.rerun()
+
+    # ---------------- PERSON B'S CONSOLE ----------------
+    with spk_col2:
+        st.markdown(f"### 🎤 Speak as Person B ({lang_b})")
+        audio_b = st.audio_input(f"Record Person B ({lang_b})", key="mic_person_b")
+
+        text_input_b = st.text_input(
+            "Or type message for Person B:",
+            placeholder=f"Type in {lang_b}...",
+            key="text_person_b"
+        )
+
+        send_b = st.button(f"⬅️ Send to Person A ({lang_a})", key="btn_send_b", type="primary", use_container_width=True)
+
+        if send_b:
+            orig_text = ""
+            if audio_b is not None:
+                with st.spinner(f"Transcribing {lang_b} speech..."):
+                    asr_lang = cap_b.get("asr")
+                    orig_text, meta = st.session_state.asr_engine.transcribe(audio_b, source_language_code=asr_lang)
+            elif text_input_b.strip():
+                orig_text = text_input_b.strip()
+            else:
+                st.warning(f"Please record voice or type a message for Person B.")
+
+            if orig_text.strip():
+                with st.spinner(f"Translating ({lang_b} ➔ {lang_a})..."):
+                    trans_text = st.session_state.engine.translate(orig_text, src_lang=code_b, tgt_lang=code_a)
+
+                audio_a_bytes = None
+                if cap_a.get("tts"):
+                    with st.spinner(f"Speaking translated audio for Person A ({lang_a})..."):
+                        try:
+                            audio_a_bytes, _ = st.session_state.tts_engine.synthesize(trans_text, target_lang_code=code_a)
+                        except Exception as e:
+                            st.caption(f"TTS Notice: {e}")
+
+                st.session_state.dialogue_history.append({
+                    "speaker": "Person B",
+                    "src_lang": lang_b,
+                    "tgt_lang": lang_a,
+                    "original": orig_text,
+                    "translated": trans_text,
+                    "audio": audio_a_bytes,
+                    "time": time.strftime("%H:%M:%S")
+                })
+                st.rerun()
+
+    # ---------------- LIVE CONVERSATION DIALOGUE STREAM ----------------
+    st.write("---")
+    st.markdown("### 💬 Live Conversation Dialogue")
+
+    if not st.session_state.dialogue_history:
+        st.info("No messages in this conversation yet. Person A or Person B can speak above to begin.")
     else:
-        # File upload option
-        uploaded_audio = st.file_uploader(
-            "Upload speech recording",
-            type=["wav", "mp3", "m4a", "ogg", "flac"],
-            help="Upload an audio file in English or any supported Indian language."
-        )
-        if uploaded_audio is not None:
-            audio_source = uploaded_audio
-            audio_format = uploaded_audio.type or "audio/wav"
+        for turn in reversed(st.session_state.dialogue_history):
+            if turn["speaker"] == "Person A":
+                st.markdown(f"""
+                <div class="chat-bubble-a">
+                    <div class="bubble-speaker" style="color: #2563eb;">👤 Person A ({turn['src_lang']}) ➔ Person B ({turn['tgt_lang']}) • <span style="font-weight:400; color:#64748b;">{turn['time']}</span></div>
+                    <div class="bubble-orig">"{turn['original']}"</div>
+                    <div class="bubble-trans">➔ {turn['translated']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                if turn.get("audio"):
+                    st.audio(turn["audio"], format="audio/mp3")
+            else:
+                st.markdown(f"""
+                <div class="chat-bubble-b">
+                    <div class="bubble-speaker" style="color: #7c3aed;">👤 Person B ({turn['src_lang']}) ➔ Person A ({turn['tgt_lang']}) • <span style="font-weight:400; color:#64748b;">{turn['time']}</span></div>
+                    <div class="bubble-orig">"{turn['original']}"</div>
+                    <div class="bubble-trans">➔ {turn['translated']}</div>
+                </div>
+                """, unsafe_allow_html=True)
+                if turn.get("audio"):
+                    st.audio(turn["audio"], format="audio/mp3")
 
-    # Audio Preview
-    if audio_source is not None:
-        st.audio(audio_source, format=audio_format)
-
-    # 2. TRANSCRIBE & TRANSLATE ACTION
-    st.write("")
-    transcribe_col1, transcribe_col2, transcribe_col3 = st.columns([1, 2, 1])
-    with transcribe_col2:
-        start_speech_btn = st.button("🚀 Transcribe & Translate Voice", type="primary", use_container_width=True)
-
-    if start_speech_btn:
-        if audio_source is None:
-            st.warning("⚠️ Please record a voice clip or upload an audio file first.")
-        else:
-            with st.spinner("Step 1/3: Recognizing speech using faster-whisper..."):
-                t_speech_start = time.time()
-                
-                # Determine language code for Whisper
-                whisper_lang_arg = None
-                if speech_src_choice != "Auto Detect":
-                    whisper_lang_arg = SUPPORTED_LANGUAGES[speech_src_choice]
-
-                try:
-                    recognized_text, meta = st.session_state.asr_engine.transcribe(
-                        audio_source,
-                        source_language_code=whisper_lang_arg
-                    )
-                    st.session_state["speech_recognized_text"] = recognized_text
-                    st.session_state["speech_detected_meta"] = meta
-
-                    if not recognized_text.strip():
-                        st.warning("Could not detect any speech in the audio. Please speak clearly into the microphone.")
-                    else:
-                        # Determine source FLORES code
-                        if speech_src_choice != "Auto Detect":
-                            effective_src_code = SUPPORTED_LANGUAGES[speech_src_choice]
-                            effective_src_lang = speech_src_choice
-                        else:
-                            # Map detected 2-letter code back to FLORES
-                            det_code = meta.get("detected_language", "en")
-                            from model_engine.speech_recognition import WHISPER_TO_FLORES_LANG
-                            effective_src_code = WHISPER_TO_FLORES_LANG.get(det_code, "eng_Latn")
-                            effective_src_lang = [k for k, v in SUPPORTED_LANGUAGES.items() if v == effective_src_code][0]
-
-                        effective_tgt_code = SUPPORTED_LANGUAGES[speech_tgt_choice]
-                        
-                        # Step 2/3: Neural Translation via IndicTrans2
-                        with st.spinner(f"Step 2/3: Translating ({effective_src_lang} ➔ {speech_tgt_choice}) via IndicTrans2..."):
-                            translated_text = st.session_state.engine.translate(
-                                recognized_text,
-                                src_lang=effective_src_code,
-                                tgt_lang=effective_tgt_code,
-                            )
-                            st.session_state["speech_translated_text"] = translated_text
-
-                        # Step 3/3: Synthesize Speech via TTS
-                        with st.spinner(f"Step 3/3: Generating speech audio in {speech_tgt_choice}..."):
-                            audio_bytes, mime = st.session_state.tts_engine.synthesize(
-                                translated_text,
-                                target_lang_code=effective_tgt_code,
-                            )
-                            st.session_state["speech_audio_bytes"] = audio_bytes
-
-                        t_speech_total = time.time() - t_speech_start
-                        
-                        # Record in history
-                        st.session_state.history.append({
-                            "Time": time.strftime("%H:%M:%S"),
-                            "Source": f"{effective_src_lang} (Voice)",
-                            "Target": f"{speech_tgt_choice} (Audio)",
-                            "Input": recognized_text,
-                            "Translated": translated_text,
-                            "Model": "Whisper + IndicTrans2 + TTS",
-                            "Latency (s)": round(t_speech_total, 2)
-                        })
-                        st.rerun()
-
-                except PermissionError as pe:
-                    st.error("🔒 Hugging Face Authentication Required")
-                    st.info(f"{pe}")
-                except Exception as ex:
-                    st.error(f"Speech processing error: {ex}")
-
-    # 3. DISPLAY EDITABLE RECOGNIZED TEXT & TRANSLATED SPEECH OUTPUT
-    if st.session_state["speech_recognized_text"]:
-        st.write("---")
-        res_col1, res_col2 = st.columns(2)
-
-        with res_col1:
-            st.markdown("#### 🗣️ Recognized Speech (Editable)")
-            meta = st.session_state.get("speech_detected_meta", {})
-            if meta:
-                st.caption(f"Audio Duration: **{meta.get('duration', 0)}s** | Detected Language: **{meta.get('detected_language', 'N/A').upper()}** (prob: {meta.get('language_probability', 1.0)})")
-            
-            # Editable text area allowing user corrections before re-translation
-            edited_asr = st.text_area(
-                "Recognized speech text",
-                value=st.session_state["speech_recognized_text"],
-                height=160,
-                key="asr_editable_field"
-            )
-
-            # Re-translate button if user edits text
-            if st.button("🔄 Re-Translate Edited Text", use_container_width=True):
-                if edited_asr.strip():
-                    with st.spinner("Re-translating edited text..."):
-                        if speech_src_choice != "Auto Detect":
-                            re_src_code = SUPPORTED_LANGUAGES[speech_src_choice]
-                        else:
-                            det_code = meta.get("detected_language", "en")
-                            from model_engine.speech_recognition import WHISPER_TO_FLORES_LANG
-                            re_src_code = WHISPER_TO_FLORES_LANG.get(det_code, "eng_Latn")
-                        
-                        re_tgt_code = SUPPORTED_LANGUAGES[speech_tgt_choice]
-
-                        new_trans = st.session_state.engine.translate(
-                            edited_asr,
-                            src_lang=re_src_code,
-                            tgt_lang=re_tgt_code
-                        )
-                        new_audio, _ = st.session_state.tts_engine.synthesize(
-                            new_trans,
-                            target_lang_code=re_tgt_code
-                        )
-                        st.session_state["speech_recognized_text"] = edited_asr
-                        st.session_state["speech_translated_text"] = new_trans
-                        st.session_state["speech_audio_bytes"] = new_audio
-                        st.rerun()
-
-        with res_col2:
-            st.markdown(f"#### 🔊 Translated Voice Output ({speech_tgt_choice})")
-            
-            trans_text = st.session_state.get("speech_translated_text", "")
-            if trans_text:
-                st.markdown(f'<div class="output-container" style="min-height: 160px;">{trans_text}</div>', unsafe_allow_html=True)
-                
-                audio_bytes = st.session_state.get("speech_audio_bytes")
-                if audio_bytes:
-                    st.write("")
-                    st.markdown("**Listen to Output Speech:**")
-                    st.audio(audio_bytes, format="audio/mp3")
-
-                    down_c1, down_c2 = st.columns(2)
-                    with down_c1:
-                        st.download_button(
-                            "📥 Download Audio (MP3)",
-                            data=audio_bytes,
-                            file_name=f"translated_speech_{speech_tgt_choice.lower()}.mp3",
-                            mime="audio/mp3",
-                            use_container_width=True
-                        )
-                    with down_c2:
-                        st.download_button(
-                            "📄 Download Text (TXT)",
-                            data=trans_text,
-                            file_name=f"translated_text_{speech_tgt_choice.lower()}.txt",
-                            mime="text/plain",
-                            use_container_width=True
-                        )
+        if st.button("🗑️ Clear Conversation Chat"):
+            st.session_state.dialogue_history = []
+            st.rerun()
 
 
 # ==============================================================================
-# TAB 2: TEXT TRANSLATOR (ORIGINAL PRESERVED WITH WORLD-CLASS INTERFACE)
+# TAB 2: SINGLE VOICE TRANSLATOR
+# ==============================================================================
+with tab_single_voice:
+    st.markdown("### 🎙️ Voice & Audio File Translator")
+    st.caption("Record voice or upload an audio file to transcribe with faster-whisper, translate with IndicTrans2, and hear spoken output.")
+
+    sv_col1, sv_col2 = st.columns(2)
+    with sv_col1:
+        s_src_lang = st.selectbox(
+            "Spoken / Input Language",
+            options=["Auto Detect"] + all_lang_names,
+            format_func=lambda x: "🌐 Auto Detect" if x == "Auto Detect" else format_lang_label(x),
+            key="sv_src_lang"
+        )
+    with sv_col2:
+        s_tgt_lang = st.selectbox(
+            "Target Spoken Language",
+            options=all_lang_names,
+            index=all_lang_names.index("Hindi"),
+            format_func=format_lang_label,
+            key="sv_tgt_lang"
+        )
+
+    s_code_tgt = SUPPORTED_LANGUAGES[s_tgt_lang]
+    s_cap_tgt = LANGUAGE_SPEECH_CAPABILITIES.get(s_code_tgt, {})
+
+    st.write("")
+    sv_mode = st.radio("Input Source", ["🎙️ Microphone", "📁 File Upload"], horizontal=True)
+    
+    sv_audio = None
+    if "Microphone" in sv_mode:
+        sv_audio = st.audio_input("Record voice", key="sv_mic")
+    else:
+        sv_audio = st.file_uploader("Upload audio file", type=["wav", "mp3", "m4a", "ogg"], key="sv_file")
+
+    if sv_audio is not None:
+        st.audio(sv_audio)
+
+    if st.button("🚀 Transcribe & Translate", key="btn_sv_run", type="primary"):
+        if sv_audio is None:
+            st.warning("Please record voice or upload audio.")
+        else:
+            with st.spinner("Transcribing speech..."):
+                t_sv_start = time.time()
+                whisper_arg = None
+                if s_src_lang != "Auto Detect":
+                    whisper_arg = LANGUAGE_SPEECH_CAPABILITIES.get(SUPPORTED_LANGUAGES[s_src_lang], {}).get("asr")
+                
+                txt_rec, meta = st.session_state.asr_engine.transcribe(sv_audio, source_language_code=whisper_arg)
+
+            if not txt_rec.strip():
+                st.warning("No speech detected.")
+            else:
+                if s_src_lang != "Auto Detect":
+                    s_code_src = SUPPORTED_LANGUAGES[s_src_lang]
+                    disp_src = s_src_lang
+                else:
+                    det = meta.get("detected_language", "en")
+                    from model_engine.speech_recognition import WHISPER_TO_FLORES_LANG
+                    s_code_src = WHISPER_TO_FLORES_LANG.get(det, "eng_Latn")
+                    disp_src = [k for k, v in SUPPORTED_LANGUAGES.items() if v == s_code_src][0]
+
+                with st.spinner(f"Translating ({disp_src} ➔ {s_tgt_lang})..."):
+                    txt_trans = st.session_state.engine.translate(txt_rec, src_lang=s_code_src, tgt_lang=s_code_tgt)
+
+                voice_bytes = None
+                if s_cap_tgt.get("tts"):
+                    with st.spinner(f"Generating voice output in {s_tgt_lang}..."):
+                        try:
+                            voice_bytes, _ = st.session_state.tts_engine.synthesize(txt_trans, target_lang_code=s_code_tgt)
+                        except Exception as e:
+                            st.caption(f"TTS Notice: {e}")
+
+                st.write("---")
+                o_c1, o_c2 = st.columns(2)
+                with o_c1:
+                    st.markdown("#### 🗣️ Recognized Text")
+                    st.write(txt_rec)
+                    st.caption(f"Language: **{meta.get('detected_language')}** | Duration: **{meta.get('duration')}s**")
+                with o_c2:
+                    st.markdown(f"#### 🔊 Translated Output ({s_tgt_lang})")
+                    st.write(txt_trans)
+                    if voice_bytes:
+                        st.audio(voice_bytes, format="audio/mp3")
+                    else:
+                        st.info(f"Audio voice generation is unavailable for {s_tgt_lang}. Translation is displayed above.")
+
+
+# ==============================================================================
+# TAB 3: INSTANT TEXT TRANSLATOR (ALL 22 LANGUAGES PRESERVED)
 # ==============================================================================
 with tab_translate:
-    lang_names = list(SUPPORTED_LANGUAGES.keys())
-
-    # Language Selector Ribbon
     with st.container():
         ctrl_col1, ctrl_swap, ctrl_col2, ctrl_meta = st.columns([4, 1, 4, 3])
 
         with ctrl_col1:
-            src_choice = st.selectbox(
+            txt_src = st.selectbox(
                 "Source Language",
-                options=lang_names,
-                format_func=lambda x: LANGUAGE_NATIVE_NAMES.get(x, x),
-                key="src_lang_select"
+                options=all_lang_names,
+                index=all_lang_names.index("English"),
+                format_func=format_lang_label,
+                key="text_src_select"
             )
 
         with ctrl_swap:
             st.write("")
             st.write("")
-            st.button("⇄", help="Swap Source and Target Languages", on_click=do_swap, use_container_width=True)
+            if st.button("⇄", help="Swap Languages", key="swap_text_btn", use_container_width=True):
+                tmp = st.session_state["text_src_select"]
+                st.session_state["text_src_select"] = st.session_state["text_tgt_select"]
+                st.session_state["text_tgt_select"] = tmp
+                st.rerun()
 
         with ctrl_col2:
-            tgt_choice = st.selectbox(
+            txt_tgt = st.selectbox(
                 "Target Language",
-                options=lang_names,
-                format_func=lambda x: LANGUAGE_NATIVE_NAMES.get(x, x),
-                key="tgt_lang_select"
+                options=all_lang_names,
+                index=all_lang_names.index("Hindi"),
+                format_func=format_lang_label,
+                key="text_tgt_select"
             )
 
-        src_code = SUPPORTED_LANGUAGES[src_choice]
-        tgt_code = SUPPORTED_LANGUAGES[tgt_choice]
-        routed_model = get_model_for_pair(src_code, tgt_code)
+        code_s = SUPPORTED_LANGUAGES[txt_src]
+        code_t = SUPPORTED_LANGUAGES[txt_tgt]
+        model_routed = get_model_for_pair(code_s, code_t)
 
         with ctrl_meta:
             st.write("")
             st.write("")
-            if routed_model == "IDENTITY":
-                st.markdown('<div class="tech-pill" style="color:#0284c7; background:#e0f2fe; border-color:#bae6fd;">⚡ Direct Same-Language Pass</div>', unsafe_allow_html=True)
+            if model_routed == "IDENTITY":
+                st.markdown('<div class="tech-pill" style="color:#0284c7; background:#e0f2fe;">⚡ Direct Same-Language Pass</div>', unsafe_allow_html=True)
             else:
-                is_loaded = st.session_state.engine.is_model_loaded(routed_model)
-                badge_style = "color:#15803d; background:#dcfce7; border-color:#bbf7d0;" if is_loaded else "color:#b45309; background:#fef3c7; border-color:#fde68a;"
-                badge_lbl = "● In-Memory Cache" if is_loaded else "○ Auto-Load on Run"
-                st.markdown(f'<div class="tech-pill" style="{badge_style}"><b>{badge_lbl}</b></div>', unsafe_allow_html=True)
+                is_ld = st.session_state.engine.is_model_loaded(model_routed)
+                st.markdown(f'<div class="tech-pill"><b>{model_routed.split("/")[-1]}</b></div>', unsafe_allow_html=True)
 
-    # Quick One-Click Presets Ribbon
+    # Preset sample chips
     st.write("")
     p_cols = st.columns([1.2] + [2.5] * len(PRESETS))
     with p_cols[0]:
-        st.markdown("<p style='font-size:0.85rem; font-weight:700; color:#64748b; margin-top:8px;'>💡 Try Sample:</p>", unsafe_allow_html=True)
+        st.markdown("<p style='font-size:0.85rem; font-weight:700; color:#64748b; margin-top:8px;'>💡 Sample:</p>", unsafe_allow_html=True)
     for idx, (label, text) in enumerate(PRESETS):
         with p_cols[idx + 1]:
-            st.button(f"✨ {label}", key=f"sample_{idx}", on_click=set_preset, args=(text,), use_container_width=True)
+            if st.button(f"✨ {label}", key=f"t_sample_{idx}", use_container_width=True):
+                st.session_state["text_input_area"] = text
+                st.rerun()
 
-    st.write("")
-
-    # Unified Translation Workspace Card
-    pane_col1, pane_col2 = st.columns(2)
-
-    with pane_col1:
-        st.markdown(f"**From:** `{src_choice}` ({src_code})")
-        user_input = st.text_area(
-            "Source Text Input",
-            height=260,
-            placeholder=f"Enter or paste text in {src_choice} to translate...",
+    # Workstation Panes
+    tp_1, tp_2 = st.columns(2)
+    with tp_1:
+        st.markdown(f"**From:** `{txt_src}` ({code_s})")
+        t_user_in = st.text_area(
+            "Source Text",
+            height=250,
+            placeholder=f"Enter text in {txt_src}...",
             label_visibility="collapsed",
-            key="main_input_area"
+            key="text_input_area"
         )
-        
-        # Meta footer under input
-        chars = len(user_input)
-        words = len(user_input.split()) if user_input.strip() else 0
-        foot_in1, foot_in2 = st.columns([3, 1])
-        with foot_in1:
-            st.markdown(f'<span class="tech-pill">Chars: {chars}</span> <span class="tech-pill">Words: {words}</span>', unsafe_allow_html=True)
-        with foot_in2:
-            st.button("🧹 Clear", on_click=do_clear, use_container_width=True)
+        t_c = len(t_user_in)
+        t_w = len(t_user_in.split()) if t_user_in.strip() else 0
+        st.markdown(f'<span class="tech-pill">Chars: {t_c}</span> <span class="tech-pill">Words: {t_w}</span>', unsafe_allow_html=True)
 
-    with pane_col2:
-        st.markdown(f"**To:** `{tgt_choice}` ({tgt_code})")
-        
-        if st.session_state.output_text:
-            st.markdown(f'<div class="output-container">{st.session_state.output_text}</div>', unsafe_allow_html=True)
-        else:
-            st.markdown(f"""
-            <div class="output-empty">
-                <span style="font-size: 1.8rem;">🌐</span>
-                <span style="font-weight: 500;">Translation will appear here instantly</span>
-                <span style="font-size: 0.8rem; color:#94a3b8;">Select language and click 'Translate'</span>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Meta footer under output
-        foot_out1, foot_out2, foot_out3, foot_out4 = st.columns([1.5, 1, 1, 1])
-        with foot_out1:
-            if st.session_state.last_latency > 0:
-                st.markdown(f'<span class="tech-pill" style="color:#2563eb; background:#eff6ff;">⚡ {st.session_state.last_latency:.2f}s latency</span>', unsafe_allow_html=True)
-        with foot_out2:
-            if st.session_state.output_text:
-                st.download_button(
-                    "📥 TXT",
-                    data=st.session_state.output_text,
-                    file_name=f"indic_translation_{src_code}_to_{tgt_code}.txt",
-                    mime="text/plain",
-                    use_container_width=True
-                )
-        with foot_out3:
-            if st.session_state.output_text:
-                with st.popover("📋 Copy"):
-                    st.code(st.session_state.output_text, language="")
-        with foot_out4:
-            # Voice speak button for Text Translator
-            if st.session_state.output_text:
-                with st.popover("🔊 Speak"):
+    with tp_2:
+        st.markdown(f"**To:** `{txt_tgt}` ({code_t})")
+        if "text_out_val" in st.session_state and st.session_state["text_out_val"]:
+            st.markdown(f'<div class="output-container">{st.session_state["text_out_val"]}</div>', unsafe_allow_html=True)
+            
+            # Speak Button if TTS supported
+            if LANGUAGE_SPEECH_CAPABILITIES.get(code_t, {}).get("tts"):
+                with st.popover("🔊 Speak Audio"):
                     try:
-                        voice_bytes, _ = st.session_state.tts_engine.synthesize(
-                            st.session_state.output_text,
-                            target_lang_code=tgt_code
-                        )
-                        st.audio(voice_bytes, format="audio/mp3")
-                    except Exception as ve:
-                        st.error(f"TTS error: {ve}")
-
-    # Action Banner
-    st.write("")
-    act_col1, act_center, act_col2 = st.columns([1, 2, 1])
-    with act_center:
-        run_btn = st.button("🚀 Translate Text", type="primary", use_container_width=True)
-
-    if run_btn:
-        if not user_input.strip():
-            st.warning("⚠️ Please enter or paste some text to translate.")
+                        t_audio, _ = st.session_state.tts_engine.synthesize(st.session_state["text_out_val"], target_lang_code=code_t)
+                        st.audio(t_audio, format="audio/mp3")
+                    except Exception as e:
+                        st.caption(f"Notice: {e}")
         else:
-            with st.spinner(f"Translating to {tgt_choice} via {routed_model.split('/')[-1]}..."):
-                t0 = time.time()
-                try:
-                    res = st.session_state.engine.translate(
-                        user_input,
-                        src_lang=src_code,
-                        tgt_lang=tgt_code,
-                    )
-                    lat = time.time() - t0
-                    st.session_state.output_text = res
-                    st.session_state.last_latency = lat
+            st.markdown('<div class="output-empty">Translation will appear here instantly</div>', unsafe_allow_html=True)
 
+    st.write("")
+    _, act_btn, _ = st.columns([1, 2, 1])
+    with act_btn:
+        if st.button("🚀 Translate Text", key="btn_trans_run", type="primary", use_container_width=True):
+            if not t_user_in.strip():
+                st.warning("Please enter text to translate.")
+            else:
+                with st.spinner(f"Translating to {txt_tgt}..."):
+                    t_st = time.time()
+                    res_t = st.session_state.engine.translate(t_user_in, src_lang=code_s, tgt_lang=code_t)
+                    lat = time.time() - t_st
+                    st.session_state["text_out_val"] = res_t
                     st.session_state.history.append({
                         "Time": time.strftime("%H:%M:%S"),
-                        "Source": src_choice,
-                        "Target": tgt_choice,
-                        "Input": user_input,
-                        "Translated": res,
-                        "Model": routed_model.split("/")[-1],
+                        "Source": txt_src,
+                        "Target": txt_tgt,
+                        "Input": t_user_in,
+                        "Translated": res_t,
+                        "Model": model_routed.split("/")[-1],
                         "Latency (s)": round(lat, 2)
                     })
                     st.rerun()
 
-                except PermissionError as pe:
-                    st.error("🔒 Hugging Face Authentication Required")
-                    st.info(f"{pe}")
-                except Exception as ex:
-                    st.error(f"Inference error: {ex}")
-
-    # Subtle Settings Drawer at Bottom
-    st.write("")
-    with st.expander("⚙️ System Engine & Hugging Face Authentication"):
-        sc1, sc2 = st.columns([3, 1])
-        with sc1:
-            new_tok = st.text_input(
-                "Hugging Face User Access Token",
-                value=st.session_state.hf_token,
-                type="password",
-                help="Enter token if models require gated access on Hugging Face."
-            )
-        with sc2:
-            st.write("")
-            st.write("")
-            if st.button("Save Token"):
-                st.session_state.hf_token = new_tok.strip()
-                st.session_state.engine.set_hf_token(st.session_state.hf_token)
-                st.success("Token saved!")
-        st.caption(f"Backend Hardware: **{st.session_state.engine.device}** | Torch Dtype: **{st.session_state.engine.torch_dtype}** | Routing Model: **{routed_model}**")
-
 
 # ==============================================================================
-# TAB 3: QUALITY BENCHMARKS & EVALUATION
+# TAB 4: QUALITY BENCHMARKS & EVALUATION
 # ==============================================================================
 with tab_benchmarks:
     st.markdown("### 📈 SacreBLEU & chrF++ Quantitative Evaluation")
@@ -811,31 +698,13 @@ with tab_benchmarks:
         b1, b2, b3 = st.columns(3)
         with b1:
             avg_bleu = df_saved["BLEU"].mean()
-            st.markdown(f"""
-            <div class="kpi-card">
-                <div class="kpi-title">Average SacreBLEU</div>
-                <div class="kpi-val">{avg_bleu:.1f}</div>
-                <div class="kpi-sub">✓ Word n-gram Precision (0-100)</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="kpi-card"><div class="kpi-title">Average SacreBLEU</div><div class="kpi-val">{avg_bleu:.1f}</div><div class="kpi-sub">✓ Word n-gram Precision (0-100)</div></div>', unsafe_allow_html=True)
         with b2:
             avg_chrf = df_saved["chrF++"].mean()
-            st.markdown(f"""
-            <div class="kpi-card">
-                <div class="kpi-title">Average chrF++</div>
-                <div class="kpi-val">{avg_chrf:.1f}</div>
-                <div class="kpi-sub">✓ Morphology-Aware Indic Metric</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="kpi-card"><div class="kpi-title">Average chrF++</div><div class="kpi-val">{avg_chrf:.1f}</div><div class="kpi-sub">✓ Morphology-Aware Indic Metric</div></div>', unsafe_allow_html=True)
         with b3:
             avg_time = df_saved["Latency (s)"].mean()
-            st.markdown(f"""
-            <div class="kpi-card">
-                <div class="kpi-title">Average Latency</div>
-                <div class="kpi-val">{avg_time:.2f}s</div>
-                <div class="kpi-sub">✓ CPU Inference Speed</div>
-            </div>
-            """, unsafe_allow_html=True)
+            st.markdown(f'<div class="kpi-card"><div class="kpi-title">Average Latency</div><div class="kpi-val">{avg_time:.2f}s</div><div class="kpi-sub">✓ CPU Inference Speed</div></div>', unsafe_allow_html=True)
 
         st.write("")
         st.dataframe(
@@ -845,8 +714,6 @@ with tab_benchmarks:
 
     st.markdown("---")
     st.subheader("🧪 Live Metric Evaluation Sandbox")
-    st.caption("Compute SacreBLEU and chrF++ scores on custom candidate and reference pairs:")
-
     ev1, ev2 = st.columns(2)
     with ev1:
         test_cand = st.text_area("Model Output / Candidate", "कृत्रिम बुद्धिमत्ता आधुनिक सॉफ्टवेयर विकास को गति देती है।", height=90)
@@ -861,7 +728,7 @@ with tab_benchmarks:
 
 
 # ==============================================================================
-# TAB 4: SESSION HISTORY
+# TAB 5: SESSION HISTORY
 # ==============================================================================
 with tab_history:
     st.markdown("### 📋 Translation Session History")
