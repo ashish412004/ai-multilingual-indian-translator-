@@ -8,6 +8,8 @@ A genuine, deep-learning-driven neural machine translation system implementing r
 
 ## 🌟 Key Highlights
 - **100% Genuine Neural Machine Translation:** Uses real sequence-to-sequence Transformer models; strictly **zero hardcoded mappings**, mock responses, or Google Translate wrappers.
+- **Complete Speech-to-Speech Translation Pipeline:** User Speech ➔ faster-whisper ASR (Microphone & Audio Upload) ➔ IndicTrans2 NMT ➔ Multilingual Indian TTS with real audio playback and MP3 download.
+- **Editable Transcription Buffer:** Allows users to review, correct, and re-translate recognized voice before generation.
 - **AI4Bharat IndicTrans2 Integration:** Real pretrained models distilled by IIT Madras (`en-indic-200M`, `indic-en-200M`, `indic-indic-320M`).
 - **Dynamic Model Routing:** Automatically determines the exact model pair required (English-to-Indic, Indic-to-English, or Indic-to-Indic) and returns identity passes for same-language requests.
 - **Advanced Preprocessing Pipeline:** Integrates `IndicProcessor` for Brahmi script transliteration, Indic numeral normalization, and entity protection (`<ID1>`, `<ID2>` placeholders for URLs, emails, and numbers).
