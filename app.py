@@ -518,46 +518,35 @@ st.markdown("""
         transform: scale(1.05);
     }
 
-    /* Clean, Modern Audio Input Capsule (Crisp Undistorted Circle) */
-    div[data-testid="stAudioInput"] {
-        background-color: #0E223D !important;
+    /* Phone Frame Container Styling */
+    div[data-testid="stVerticalBlockBorderWrapper"] {
+        background-color: #0B1B36 !important;
         border: 1.5px solid #1E3A5F !important;
-        border-radius: 9999px !important;
-        padding: 4px 12px !important;
-        margin: 0.85rem 0 !important;
-        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.45) !important;
-        height: 52px !important;
-        display: flex !important;
-        align-items: center !important;
+        border-radius: 28px !important;
+        padding: 1.5rem 1.25rem !important;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.6) !important;
+    }
+
+    /* Clean Audio Input Bar (Preserves Streamlit's Natural Circular Mic Button) */
+    div[data-testid="stAudioInput"] {
+        background-color: #08162D !important;
+        border: 1px solid #1E3A5F !important;
+        border-radius: 14px !important;
+        padding: 4px 10px !important;
+        margin: 0.75rem 0 !important;
     }
     div[data-testid="stAudioInput"] button[data-testid="stAudioInputRecordButton"],
     div[data-testid="stAudioInput"] button {
-        width: 38px !important;
-        height: 38px !important;
-        min-width: 38px !important;
-        min-height: 38px !important;
-        max-width: 38px !important;
-        max-height: 38px !important;
-        border-radius: 50% !important;
-        background: radial-gradient(circle, #20C9B7 0%, #0D9488 100%) !important;
-        border: 2px solid #20C9B7 !important;
-        box-shadow: 0 0 12px rgba(32, 201, 183, 0.5) !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        cursor: pointer !important;
-        transition: transform 0.15s ease, background 0.15s ease !important;
-        padding: 0 !important;
+        background: #20C9B7 !important;
+        color: #08162D !important;
+        box-shadow: 0 0 12px rgba(32, 201, 183, 0.4) !important;
+        transition: transform 0.15s ease !important;
     }
     div[data-testid="stAudioInput"] button:active {
-        transform: scale(0.9) !important;
-        background: radial-gradient(circle, #F43F5E 0%, #BE123C 100%) !important;
-        border-color: #FDA4AF !important;
-        box-shadow: 0 0 18px rgba(244, 63, 94, 0.8) !important;
+        transform: scale(0.92) !important;
+        background: #F43F5E !important;
     }
     div[data-testid="stAudioInput"] svg {
-        width: 20px !important;
-        height: 20px !important;
         fill: #08162D !important;
         color: #08162D !important;
     }
@@ -916,174 +905,174 @@ elif nav_choice == "Voice Conversation":
 
     if voice_mode == "Mobile Voice Translator (Hold & Record)":
         # ----------------------------------------------------------------------
-        # MOBILE PHONE TRANSLATOR UI (EXACT MATCH TO UPLOADED REFERENCE SCREENSHOT)
+        # MOBILE PHONE TRANSLATOR UI (PROPORTIONATE PHONE FRAME)
         # ----------------------------------------------------------------------
-        st.markdown("""
-        <div class="mobile-phone-frame">
-            <div class="mobile-voice-header">
-                <div style="display:flex; align-items:center; gap:8px;">
-                    <span style="font-size:0.85rem; color:#64748B; font-weight:600;">◀ VOICE</span>
-                    <span class="mobile-voice-title">Voice Translator</span>
-                </div>
-                <div class="state-badge-active">● Listening Ready</div>
-            </div>
-        """, unsafe_allow_html=True)
-
-        # Language Pair Selector (From / To)
-        mv_c1, mv_swap, mv_c2 = st.columns([5, 1, 5])
-        
-        def do_mv_swap():
-            s = st.session_state.get("mv_src_lang", "English")
-            t = st.session_state.get("mv_tgt_lang", "Hindi")
-            st.session_state["mv_src_lang"] = t
-            st.session_state["mv_tgt_lang"] = s
-
-        with mv_c1:
-            if "mv_src_lang" not in st.session_state:
-                st.session_state["mv_src_lang"] = "English"
-            m_src = st.selectbox(
-                "From",
-                options=["Auto Detect"] + all_lang_names,
-                format_func=lambda x: "Auto Detect" if x == "Auto Detect" else format_lang_clean(x),
-                key="mv_src_lang"
-            )
-
-        with mv_swap:
-            st.write("")
-            st.write("")
-            st.button("⇄", key="btn_mv_swap", on_click=do_mv_swap, help="Swap Languages")
-
-        with mv_c2:
-            if "mv_tgt_lang" not in st.session_state:
-                st.session_state["mv_tgt_lang"] = "Hindi"
-            m_tgt = st.selectbox(
-                "To",
-                options=all_lang_names,
-                key="mv_tgt_lang",
-                format_func=format_lang_clean
-            )
-
-        m_tgt_code = SUPPORTED_LANGUAGES[m_tgt]
-        m_tgt_cap = LANGUAGE_SPEECH_CAPABILITIES.get(m_tgt_code, {})
-
-        # Optional Manual Text Input / Correction Field
-        m_typed_text = st.text_input(
-            "Write here | (Optional text message)",
-            placeholder="Write here | (or hold the mic button below to record)",
-            key="mv_typed_text",
-            label_visibility="visible"
-        )
-
-        # Waveform & Recording Console
-        st.markdown("""
-        <div style="background:#08162D; border:1px solid #1E3A5F; border-radius:18px; padding:1rem; margin-top:1rem;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.4rem;">
-                <span style="font-size:0.75rem; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8;">Speech Input Channel</span>
-                <span style="font-size:0.75rem; color:#20C9B7; font-weight:600;">Hold or Tap Mic</span>
-            </div>
-            <div class="waveform-container" style="background:#0E223D; border:none; height:42px; margin-bottom:0.5rem;">
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-                <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
-
-        # Clean circular mic recording capsule
-        mv_audio = st.audio_input("Record Voice", key="mv_mic_input", label_visibility="collapsed")
-
-        # Action Button to Execute Pipeline
-        st.write("")
-        mv_run = st.button("Translate Speech", key="btn_mv_run", type="primary", use_container_width=True)
-
-        if mv_run:
-            mv_rec_text = ""
-            if mv_audio is not None:
-                with st.spinner("Transcribing speech with faster-whisper..."):
-                    arg_asr = None
-                    if m_src != "Auto Detect":
-                        arg_asr = LANGUAGE_SPEECH_CAPABILITIES.get(SUPPORTED_LANGUAGES[m_src], {}).get("asr")
-                    mv_rec_text, m_meta = st.session_state.asr_engine.transcribe(mv_audio, source_language_code=arg_asr)
-            elif m_typed_text.strip():
-                mv_rec_text = m_typed_text.strip()
-            else:
-                st.warning("Please record voice or type a message above.")
-
-            if mv_rec_text.strip():
-                if m_src != "Auto Detect":
-                    m_src_code = SUPPORTED_LANGUAGES[m_src]
-                    m_src_disp = m_src
-                else:
-                    det = m_meta.get("detected_language", "en") if "m_meta" in locals() else "en"
-                    from model_engine.speech_recognition import WHISPER_TO_FLORES_LANG
-                    m_src_code = WHISPER_TO_FLORES_LANG.get(det, "eng_Latn")
-                    matched = [k for k, v in SUPPORTED_LANGUAGES.items() if v == m_src_code]
-                    m_src_disp = matched[0] if matched else "English"
-
-                with st.spinner(f"Translating ({m_src_disp} → {m_tgt})..."):
-                    mv_trans = st.session_state.engine.translate(mv_rec_text, src_lang=m_src_code, tgt_lang=m_tgt_code)
-
-                mv_audio_bytes = None
-                if m_tgt_cap.get("tts"):
-                    with st.spinner(f"Generating {m_tgt} audio output..."):
-                        try:
-                            mv_audio_bytes, _ = st.session_state.tts_engine.synthesize(mv_trans, target_lang_code=m_tgt_code)
-                        except Exception as e:
-                            st.caption(f"Speech synthesis notice: {e}")
-
-                st.session_state["last_mv_result"] = {
-                    "src_lang": m_src_disp,
-                    "tgt_lang": m_tgt,
-                    "original": mv_rec_text,
-                    "translated": mv_trans,
-                    "audio": mv_audio_bytes,
-                    "time": time.strftime("%H:%M:%S")
-                }
-                st.session_state.dialogue_history.append({
-                    "speaker": f"{m_src_disp}",
-                    "recipient": f"{m_tgt}",
-                    "original": mv_rec_text,
-                    "translated": mv_trans,
-                    "audio": mv_audio_bytes,
-                    "time": time.strftime("%H:%M:%S")
-                })
-                st.rerun()
-
-        # Display Latest Translation Result inside Mobile Card
-        if "last_mv_result" in st.session_state and st.session_state["last_mv_result"]:
-            res = st.session_state["last_mv_result"]
-            st.markdown(f"""
-            <div style="background:#142B49; border:1px solid #1E3A5F; border-radius:18px; padding:1.2rem; margin-top:1.25rem;">
-                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94A3B8; text-transform:uppercase; margin-bottom:0.35rem;">
-                    <span>{res['src_lang']}</span>
-                    <span>{res['time']}</span>
-                </div>
-                <div style="font-size:0.95rem; color:#94A3B8; margin-bottom:0.85rem;">"{res['original']}"</div>
-                
-                <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#20C9B7; text-transform:uppercase; margin-bottom:0.35rem; font-weight:600;">
-                    <span>{res['tgt_lang']} Translated</span>
-                </div>
-                <div style="font-size:1.15rem; font-weight:600; color:#F8FAFC; margin-bottom:0.85rem; line-height:1.5;">{res['translated']}</div>
-            </div>
-            """, unsafe_allow_html=True)
-            if res.get("audio"):
-                st.audio(res["audio"], format="audio/mp3")
-
-        # Translation History List in Mobile Phone
-        if st.session_state.dialogue_history:
-            st.markdown('<div style="font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; margin:1.5rem 0 0.5rem 0;">Recent Translations</div>', unsafe_allow_html=True)
-            for item in reversed(st.session_state.dialogue_history[-3:]):
-                st.markdown(f"""
-                <div style="background:#08162D; border:1px solid #1E3A5F; border-radius:12px; padding:0.85rem 1rem; margin-bottom:0.5rem;">
-                    <div style="font-size:0.72rem; color:#20C9B7; font-weight:600;">{item['speaker']} → {item['recipient']}</div>
-                    <div style="font-size:0.92rem; color:#F8FAFC; margin-top:2px;">{item['translated']}</div>
+        _, phone_col, _ = st.columns([1, 1.8, 1])
+        with phone_col:
+            with st.container(border=True):
+                st.markdown("""
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.25rem;">
+                    <div style="display:flex; align-items:center; gap:8px;">
+                        <span style="font-size:0.8rem; color:#64748B; font-weight:700;">◀ VOICE</span>
+                        <span style="font-size:1.15rem; font-weight:700; color:#F8FAFC;">Choose a Language</span>
+                    </div>
+                    <div class="state-badge-active">● Ready</div>
                 </div>
                 """, unsafe_allow_html=True)
 
-        st.markdown('</div>', unsafe_allow_html=True)
+                # Language Pair Selector (From / To)
+                mv_c1, mv_swap, mv_c2 = st.columns([5, 1, 5])
+                
+                def do_mv_swap():
+                    s = st.session_state.get("mv_src_lang", "English")
+                    t = st.session_state.get("mv_tgt_lang", "Hindi")
+                    st.session_state["mv_src_lang"] = t
+                    st.session_state["mv_tgt_lang"] = s
+
+                with mv_c1:
+                    if "mv_src_lang" not in st.session_state:
+                        st.session_state["mv_src_lang"] = "English"
+                    m_src = st.selectbox(
+                        "From",
+                        options=["Auto Detect"] + all_lang_names,
+                        format_func=lambda x: "Auto Detect" if x == "Auto Detect" else format_lang_clean(x),
+                        key="mv_src_lang"
+                    )
+
+                with mv_swap:
+                    st.write("")
+                    st.write("")
+                    st.button("⇄", key="btn_mv_swap", on_click=do_mv_swap, help="Swap Languages")
+
+                with mv_c2:
+                    if "mv_tgt_lang" not in st.session_state:
+                        st.session_state["mv_tgt_lang"] = "Hindi"
+                    m_tgt = st.selectbox(
+                        "To",
+                        options=all_lang_names,
+                        key="mv_tgt_lang",
+                        format_func=format_lang_clean
+                    )
+
+                m_tgt_code = SUPPORTED_LANGUAGES[m_tgt]
+                m_tgt_cap = LANGUAGE_SPEECH_CAPABILITIES.get(m_tgt_code, {})
+
+                # Optional Manual Text Input / Correction Field
+                m_typed_text = st.text_input(
+                    "Write here | (Optional message)",
+                    placeholder="Write here | (or use microphone below)",
+                    key="mv_typed_text",
+                    label_visibility="visible"
+                )
+
+                # Waveform & Recording Console
+                st.markdown("""
+                <div style="background:#08162D; border:1px solid #1E3A5F; border-radius:18px; padding:0.85rem 1rem; margin-top:0.75rem;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:0.35rem;">
+                        <span style="font-size:0.72rem; text-transform:uppercase; letter-spacing:0.06em; color:#94A3B8;">Frequency Waveform</span>
+                        <span style="font-size:0.72rem; color:#20C9B7; font-weight:600;">Hold or Tap Mic</span>
+                    </div>
+                    <div class="waveform-container" style="background:#0E223D; border:none; height:42px; margin:0.25rem 0;">
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                        <div class="wave-bar"></div><div class="wave-bar"></div><div class="wave-bar"></div>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
+
+                # Clean circular mic recording capsule
+                mv_audio = st.audio_input("Record Voice", key="mv_mic_input", label_visibility="collapsed")
+
+                # Action Button to Execute Pipeline
+                st.write("")
+                mv_run = st.button("Translate Speech", key="btn_mv_run", type="primary", use_container_width=True)
+
+                if mv_run:
+                    mv_rec_text = ""
+                    if mv_audio is not None:
+                        with st.spinner("Transcribing speech with faster-whisper..."):
+                            arg_asr = None
+                            if m_src != "Auto Detect":
+                                arg_asr = LANGUAGE_SPEECH_CAPABILITIES.get(SUPPORTED_LANGUAGES[m_src], {}).get("asr")
+                            mv_rec_text, m_meta = st.session_state.asr_engine.transcribe(mv_audio, source_language_code=arg_asr)
+                    elif m_typed_text.strip():
+                        mv_rec_text = m_typed_text.strip()
+                    else:
+                        st.warning("Please record voice or type a message above.")
+
+                    if mv_rec_text.strip():
+                        if m_src != "Auto Detect":
+                            m_src_code = SUPPORTED_LANGUAGES[m_src]
+                            m_src_disp = m_src
+                        else:
+                            det = m_meta.get("detected_language", "en") if "m_meta" in locals() else "en"
+                            from model_engine.speech_recognition import WHISPER_TO_FLORES_LANG
+                            m_src_code = WHISPER_TO_FLORES_LANG.get(det, "eng_Latn")
+                            matched = [k for k, v in SUPPORTED_LANGUAGES.items() if v == m_src_code]
+                            m_src_disp = matched[0] if matched else "English"
+
+                        with st.spinner(f"Translating ({m_src_disp} → {m_tgt})..."):
+                            mv_trans = st.session_state.engine.translate(mv_rec_text, src_lang=m_src_code, tgt_lang=m_tgt_code)
+
+                        mv_audio_bytes = None
+                        if m_tgt_cap.get("tts"):
+                            with st.spinner(f"Generating {m_tgt} audio output..."):
+                                try:
+                                    mv_audio_bytes, _ = st.session_state.tts_engine.synthesize(mv_trans, target_lang_code=m_tgt_code)
+                                except Exception as e:
+                                    st.caption(f"Speech synthesis notice: {e}")
+
+                        st.session_state["last_mv_result"] = {
+                            "src_lang": m_src_disp,
+                            "tgt_lang": m_tgt,
+                            "original": mv_rec_text,
+                            "translated": mv_trans,
+                            "audio": mv_audio_bytes,
+                            "time": time.strftime("%H:%M:%S")
+                        }
+                        st.session_state.dialogue_history.append({
+                            "speaker": f"{m_src_disp}",
+                            "recipient": f"{m_tgt}",
+                            "original": mv_rec_text,
+                            "translated": mv_trans,
+                            "audio": mv_audio_bytes,
+                            "time": time.strftime("%H:%M:%S")
+                        })
+                        st.rerun()
+
+                # Display Latest Translation Result inside Mobile Card
+                if "last_mv_result" in st.session_state and st.session_state["last_mv_result"]:
+                    res = st.session_state["last_mv_result"]
+                    st.markdown(f"""
+                    <div style="background:#142B49; border:1px solid #1E3A5F; border-radius:18px; padding:1.2rem; margin-top:1.25rem;">
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#94A3B8; text-transform:uppercase; margin-bottom:0.35rem;">
+                            <span>{res['src_lang']}</span>
+                            <span>{res['time']}</span>
+                        </div>
+                        <div style="font-size:0.95rem; color:#94A3B8; margin-bottom:0.85rem;">"{res['original']}"</div>
+                        
+                        <div style="display:flex; justify-content:space-between; font-size:0.75rem; color:#20C9B7; text-transform:uppercase; margin-bottom:0.35rem; font-weight:600;">
+                            <span>{res['tgt_lang']} Translated</span>
+                        </div>
+                        <div style="font-size:1.15rem; font-weight:600; color:#F8FAFC; margin-bottom:0.85rem; line-height:1.5;">{res['translated']}</div>
+                    </div>
+                    """, unsafe_allow_html=True)
+                    if res.get("audio"):
+                        st.audio(res["audio"], format="audio/mp3")
+
+                # Translation History List in Mobile Phone
+                if st.session_state.dialogue_history:
+                    st.markdown('<div style="font-size:0.8rem; font-weight:600; color:#94A3B8; text-transform:uppercase; letter-spacing:0.05em; margin:1.5rem 0 0.5rem 0;">Recent Translations</div>', unsafe_allow_html=True)
+                    for item in reversed(st.session_state.dialogue_history[-3:]):
+                        st.markdown(f"""
+                        <div style="background:#08162D; border:1px solid #1E3A5F; border-radius:12px; padding:0.85rem 1rem; margin-bottom:0.5rem;">
+                            <div style="font-size:0.72rem; color:#20C9B7; font-weight:600;">{item['speaker']} → {item['recipient']}</div>
+                            <div style="font-size:0.92rem; color:#F8FAFC; margin-top:2px;">{item['translated']}</div>
+                        </div>
+                        """, unsafe_allow_html=True)
 
     elif voice_mode == "Two-Speaker Dialogue Console":
         # ----------------------------------------------------------------------
