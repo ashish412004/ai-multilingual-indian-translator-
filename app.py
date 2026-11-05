@@ -30,12 +30,75 @@ st.markdown("""
         color: #F8FAFC !important;
     }
 
-    #MainMenu, footer, header {visibility: hidden !important;}
+    /* Hide default menu and footer, but preserve sidebar toggle in header */
+    #MainMenu, footer, [data-testid="stToolbar"] {
+        visibility: hidden !important;
+        display: none !important;
+    }
+    
+    header[data-testid="stHeader"] {
+        background: transparent !important;
+        height: 3.2rem !important;
+        z-index: 999999 !important;
+    }
+    
+    /* Ensure the mobile/desktop sidebar expand toggle button is always visible & styled in executive theme */
+    [data-testid="stSidebarCollapsedControl"],
+    button[data-testid="stSidebarCollapsedControl"] {
+        display: flex !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        background-color: #142B49 !important;
+        border: 1px solid #1E3A5F !important;
+        border-radius: 8px !important;
+        color: #20C9B7 !important;
+        top: 0.6rem !important;
+        left: 0.75rem !important;
+        padding: 6px 8px !important;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+        transition: all 0.2s ease !important;
+        cursor: pointer !important;
+    }
+    [data-testid="stSidebarCollapsedControl"]:hover,
+    button[data-testid="stSidebarCollapsedControl"]:hover {
+        background-color: #1B365D !important;
+        border-color: #20C9B7 !important;
+    }
+    [data-testid="stSidebarCollapsedControl"] svg,
+    button[data-testid="stSidebarCollapsedControl"] svg {
+        fill: #20C9B7 !important;
+        color: #20C9B7 !important;
+        width: 1.25rem !important;
+        height: 1.25rem !important;
+    }
+    [data-testid="stSidebarCollapseButton"] {
+        color: #94A3B8 !important;
+    }
+    [data-testid="stSidebarCollapseButton"]:hover {
+        color: #20C9B7 !important;
+    }
     
     .block-container {
-        padding-top: 1.5rem !important;
+        padding-top: 2.2rem !important;
         padding-bottom: 3rem !important;
         max-width: 1380px !important;
+    }
+
+    @media (max-width: 768px) {
+        .block-container {
+            padding-top: 3.8rem !important;
+            padding-left: 0.85rem !important;
+            padding-right: 0.85rem !important;
+        }
+        .page-main-title {
+            font-size: 1.4rem !important;
+        }
+        [data-testid="stSidebarCollapsedControl"],
+        button[data-testid="stSidebarCollapsedControl"] {
+            top: 0.5rem !important;
+            left: 0.5rem !important;
+            z-index: 9999999 !important;
+        }
     }
 
     /* Sidebar Executive Styling */
