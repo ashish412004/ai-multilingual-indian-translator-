@@ -30,52 +30,92 @@ st.markdown("""
         color: #F8FAFC !important;
     }
 
-    /* Hide default menu and footer, but preserve sidebar toggle in header */
-    #MainMenu, footer, [data-testid="stToolbar"] {
+    /* Hide default menu and footer only - DO NOT hide header or toolbar */
+    #MainMenu {
         visibility: hidden !important;
-        display: none !important;
+    }
+    footer {
+        visibility: hidden !important;
     }
     
     header[data-testid="stHeader"] {
         background: transparent !important;
-        height: 3.2rem !important;
-        z-index: 999999 !important;
     }
     
-    /* Ensure the mobile/desktop sidebar expand toggle button is always visible & styled in executive theme */
+    /* Ensure the mobile/desktop sidebar expand toggle button is ALWAYS visible & styled in executive turquoise */
     [data-testid="stSidebarCollapsedControl"],
-    button[data-testid="stSidebarCollapsedControl"] {
+    button[data-testid="stSidebarCollapsedControl"],
+    .st-emotion-cache-12fmjuu,
+    .st-emotion-cache-15ecox0,
+    [data-testid="collapsedControl"] {
         display: flex !important;
         visibility: visible !important;
         opacity: 1 !important;
+        position: fixed !important;
+        top: 14px !important;
+        left: 14px !important;
+        z-index: 99999999 !important;
         background-color: #142B49 !important;
-        border: 1px solid #1E3A5F !important;
+        border: 1.5px solid #20C9B7 !important;
         border-radius: 8px !important;
         color: #20C9B7 !important;
-        top: 0.6rem !important;
-        left: 0.75rem !important;
         padding: 6px 8px !important;
-        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45) !important;
+        box-shadow: 0 4px 18px rgba(0, 0, 0, 0.6) !important;
         transition: all 0.2s ease !important;
         cursor: pointer !important;
     }
     [data-testid="stSidebarCollapsedControl"]:hover,
-    button[data-testid="stSidebarCollapsedControl"]:hover {
+    button[data-testid="stSidebarCollapsedControl"]:hover,
+    [data-testid="collapsedControl"]:hover {
         background-color: #1B365D !important;
         border-color: #20C9B7 !important;
+        box-shadow: 0 0 12px rgba(32, 201, 183, 0.3) !important;
     }
     [data-testid="stSidebarCollapsedControl"] svg,
-    button[data-testid="stSidebarCollapsedControl"] svg {
+    button[data-testid="stSidebarCollapsedControl"] svg,
+    [data-testid="collapsedControl"] svg {
         fill: #20C9B7 !important;
+        stroke: #20C9B7 !important;
         color: #20C9B7 !important;
-        width: 1.25rem !important;
-        height: 1.25rem !important;
+        width: 1.4rem !important;
+        height: 1.4rem !important;
     }
     [data-testid="stSidebarCollapseButton"] {
         color: #94A3B8 !important;
     }
     [data-testid="stSidebarCollapseButton"]:hover {
         color: #20C9B7 !important;
+    }
+
+    /* Executive Pills Styling for Top Navigation */
+    div[data-testid="stPills"] {
+        background: transparent !important;
+        margin-bottom: 0.85rem !important;
+    }
+    div[data-testid="stPills"] button {
+        background-color: #142B49 !important;
+        border: 1px solid #1E3A5F !important;
+        color: #94A3B8 !important;
+        border-radius: 8px !important;
+        font-weight: 500 !important;
+        font-size: 0.88rem !important;
+        padding: 0.4rem 1rem !important;
+        transition: all 0.15s ease !important;
+    }
+    div[data-testid="stPills"] button:hover {
+        background-color: #1B365D !important;
+        border-color: #20C9B7 !important;
+        color: #F8FAFC !important;
+    }
+    div[data-testid="stPills"] button[aria-selected="true"] {
+        background-color: #20C9B7 !important;
+        border-color: #20C9B7 !important;
+        color: #08162D !important;
+        font-weight: 600 !important;
+    }
+    div[data-testid="stPills"] button[aria-selected="true"] span {
+        color: #08162D !important;
+        font-weight: 600 !important;
     }
     
     .block-container {
@@ -527,6 +567,17 @@ PRESETS = [
     ("Academic Research", "Scholars and researchers require accurate translation systems to preserve and disseminate scientific knowledge."),
 ]
 
+NAV_OPTIONS = [
+    "Translate",
+    "Voice Conversation",
+    "Quality Benchmarks",
+    "History",
+    "Settings"
+]
+
+if "nav_choice" not in st.session_state:
+    st.session_state.nav_choice = "Translate"
+
 # ==============================================================================
 # SIDEBAR NAVIGATION
 # ==============================================================================
@@ -543,21 +594,19 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
-    st.markdown('<div style="font-size: 0.72rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.25rem 0 0.5rem 0.25rem;">Workspace</div>', unsafe_allow_html=True)
+    st.markdown('<div style="font-size: 0.72rem; font-weight: 600; color: #64748B; text-transform: uppercase; letter-spacing: 0.08em; margin: 1.25rem 0 0.5rem 0.25rem;">Workspace Navigation</div>', unsafe_allow_html=True)
     
-    nav_choice = st.radio(
+    current_idx = NAV_OPTIONS.index(st.session_state.nav_choice) if st.session_state.nav_choice in NAV_OPTIONS else 0
+    sidebar_choice = st.radio(
         "Navigation",
-        options=[
-            "Translate",
-            "Voice Conversation",
-            "Quality Benchmarks",
-            "History",
-            "Settings"
-        ],
-        index=0,
+        options=NAV_OPTIONS,
+        index=current_idx,
         label_visibility="collapsed",
-        key="main_nav_radio"
+        key="sidebar_nav_radio"
     )
+    if sidebar_choice != st.session_state.nav_choice:
+        st.session_state.nav_choice = sidebar_choice
+        st.rerun()
 
     st.markdown('<div style="margin-top: 2.25rem; border-top: 1px solid #1E3A5F; padding-top: 1.25rem;"></div>', unsafe_allow_html=True)
     
@@ -580,6 +629,31 @@ with st.sidebar:
     </div>
     """, unsafe_allow_html=True)
 
+
+# ==============================================================================
+# TOP EXECUTIVE NAVIGATION BAR (ALWAYS ACCESSIBLE ON MOBILE & DESKTOP)
+# ==============================================================================
+top_nav_col1, top_nav_col2 = st.columns([10, 2])
+with top_nav_col1:
+    top_pills_val = st.pills(
+        "Workspace Navigation",
+        options=NAV_OPTIONS,
+        default=st.session_state.nav_choice,
+        label_visibility="collapsed",
+        key="top_nav_pills_selector"
+    )
+    if top_pills_val and top_pills_val != st.session_state.nav_choice:
+        st.session_state.nav_choice = top_pills_val
+        st.rerun()
+
+with top_nav_col2:
+    st.markdown("""
+    <div style="display:flex; justify-content:flex-end; align-items:center; height:100%; padding-top:4px;">
+        <span class="breadcrumb-pill">22 Languages</span>
+    </div>
+    """, unsafe_allow_html=True)
+
+nav_choice = st.session_state.nav_choice
 
 # ==============================================================================
 # VIEW 1: TRANSLATE (TEXT-TO-TEXT WORKSPACE)
